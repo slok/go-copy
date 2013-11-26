@@ -11,6 +11,7 @@ import (
 
 const (
 	ResourceURL = "https://api.copy.com/rest/"
+	AuthURL     = "https://www.copy.com/applications/authorize"
 )
 
 type AccessToken struct {
@@ -19,36 +20,52 @@ type AccessToken struct {
 }
 
 type Session struct {
-	AccessToken AccessToken
+	OauthClient oauth.Client
+	TokenCreds  oauth.Credentials
 }
 
 func NewSession(accessToken AccessToken) Session {
-	//Return Session
+
+	//Create the oauth client
+	oauthClient := oauth.Client{
+		TokenRequestURI: AuthURL,
+	}
+
+	tokenCred := oauth.Credentials{
+		Token:  accessToken.Token,
+		Secret: accessToken.Key,
+	}
+
+	//Return Session with the Oauth client created
 	return Session{
-		AccessToken{
-			Key:   accessToken.Key,
-			Token: accessToken.Token,
-		},
+		OauthClient: oauthClient,
+		TokenCreds:  tokenCred,
 	}
 
 }
 
-func (s *Session) Get() {
+func (s *Session) Get(urlStr string, form url.Values) (*http.Response, error) {
 
 }
 
-func (s *Session) Post() {
+func (s *Session) Post(urlStr string, form url.Values) (*http.Response, error) {
 
 }
 
-func (s *Session) Delete() {
+func (s *Session) Delete(urlStr string, form url.Values) (*http.Response, error) {
 
 }
 
-func (s *Session) Put() {
+func (s *Session) Put(urlStr string, form url.Values) (*http.Response, error) {
 
 }
 
-func (s *Session) Do() {
+func (s *Session) Do(request *http.Request) (*http.Response, error) {
+
+	// Custom headers for Copy API
+	customHeades := map[string]string{
+		"X-Api-Version": "1",
+		"Accept":        "application/json",
+	}
 
 }
