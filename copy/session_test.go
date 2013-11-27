@@ -23,6 +23,7 @@ var (
 	appSecret    string
 	accessToken  string
 	accessSecret string
+	session      Session
 )
 
 func setup() {
@@ -30,6 +31,17 @@ func setup() {
 	appSecret = os.Getenv(appSecretEnv)
 	accessToken = os.Getenv(accessTokenEnv)
 	accessSecret = os.Getenv(accessSecretEnv)
+
+	session = NewSession(
+		AppToken{
+			Token: appToken,
+			Key:   appSecret,
+		},
+		AccessToken{
+			Token: accessToken,
+			Key:   accessSecret,
+		},
+	)
 }
 
 func tearDown() {
@@ -58,6 +70,44 @@ func TestCredentialData(t *testing.T) {
 	}
 }
 
+// Check the GET request in a valid copy resource
 func TestGetRequest(t *testing.T) {
+	setup()
+	defer tearDown()
 
+	resp, err := session.Get("https://api.copy.com/rest/user", nil)
+
+	if err != nil {
+		t.Error("Expected no error in GET request")
+	}
+
+	if resp.StatusCode != 200 {
+		t.Errorf("Response status error shouldn't be: %v", resp.StatusCode)
+	}
+}
+
+// Check the GET request in an invalid copy resource with valid credentials
+func TestGetRequestWrongResource(t *testing.T) {
+	setup()
+	defer tearDown()
+
+	resp, _ := session.Get("https://api.copy.com/rest/userfail", nil)
+
+	if resp.StatusCode != 400 {
+		t.Errorf("Response status error should be: %v", resp.StatusCode)
+	}
+}
+
+// Check the GET request in a valid copy resource with wrong credentials
+func TestGetRequestWrongCredentials(t *testing.T) {
+	setup()
+	defer tearDown()
+
+	session.TokenCreds.Secret = "You shall not pass!"
+
+	resp, _ := session.Get("https://api.copy.com/rest/user", nil)
+
+	if resp.StatusCode != 400 {
+		t.Errorf("Response status error should be: %v", resp.StatusCode)
+	}
 }
