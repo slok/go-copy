@@ -18,12 +18,28 @@ const (
 	accessSecretEnv = "ACCESS_SECRET"
 )
 
+var (
+	appToken     string
+	appSecret    string
+	accessToken  string
+	accessSecret string
+)
+
+func setup() {
+	appToken = os.Getenv(appTokenEnv)
+	appSecret = os.Getenv(appSecretEnv)
+	accessToken = os.Getenv(accessTokenEnv)
+	accessSecret = os.Getenv(accessSecretEnv)
+}
+
+func tearDown() {
+
+}
+
 // Checks if the credentials for the integration tests are set in the env vars
 func TestCredentialData(t *testing.T) {
-	appToken := os.Getenv(appTokenEnv)
-	appSecret := os.Getenv(appSecretEnv)
-	accessToken := os.Getenv(accessTokenEnv)
-	accessSecret := os.Getenv(accessSecretEnv)
+	setup()
+	defer tearDown()
 
 	if appToken == "" {
 		t.Error("Expected", appTokenEnv, "env var")
