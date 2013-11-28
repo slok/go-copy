@@ -6,6 +6,7 @@ import (
 	//"log"
 	"net/http"
 	"net/url"
+	"strings"
 	//"os"
 
 	"github.com/garyburd/go-oauth/oauth"
@@ -85,7 +86,13 @@ func (s *Session) Delete(urlStr string, form url.Values) (*http.Response, error)
 }
 
 func (s *Session) Put(urlStr string, form url.Values) (*http.Response, error) {
-	return nil, nil
+	req, err := http.NewRequest("PUT", urlStr, strings.NewReader(form.Encode()))
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	req.Header.Set("Authorization", s.OauthClient.AuthorizationHeader(&s.TokenCreds, "PUT", req.URL, form))
+	return s.Do(req, nil)
 }
 
 func (s *Session) Do(request *http.Request, httpClient *http.Client) (*http.Response, error) {

@@ -120,9 +120,10 @@ func TestPutRequest(t *testing.T) {
 	setup()
 	defer tearDown()
 
-	values := url.Values{}
-	values.Add("first_name", "Slok2")
-	values.Add("last_name", "Wooloo")
+	values := url.Values{
+		"first_name": {"Test"},
+		"last_name":  {"Test2"},
+	}
 
 	resp, err := session.Put("https://api.copy.com/rest/user", values)
 
