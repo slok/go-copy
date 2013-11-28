@@ -72,7 +72,7 @@ func (s *Session) Get(urlStr string, form url.Values) (*http.Response, error) {
 	req.Header.Set("Authorization", s.OauthClient.AuthorizationHeader(&s.TokenCreds, "GET", req.URL, form))
 	req.URL.RawQuery = form.Encode()
 
-	return s.Do(req)
+	return s.Do(req, nil)
 
 }
 
@@ -88,7 +88,11 @@ func (s *Session) Put(urlStr string, form url.Values) (*http.Response, error) {
 	return nil, nil
 }
 
-func (s *Session) Do(request *http.Request) (*http.Response, error) {
+func (s *Session) Do(request *http.Request, httpClient *http.Client) (*http.Response, error) {
+
+	if httpClient == nil {
+		httpClient = http.DefaultClient
+	}
 
 	// Custom headers for Copy API, [IMPORTANT!!]
 	customHeaders := map[string]string{
@@ -100,6 +104,6 @@ func (s *Session) Do(request *http.Request) (*http.Response, error) {
 		request.Header.Add(k, v)
 	}
 
-	return http.DefaultClient.Do(request)
+	return httpClient.Do(request)
 
 }
