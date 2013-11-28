@@ -7,6 +7,9 @@
 package copy
 
 import (
+	"io"
+	"log"
+	"net/url"
 	"os"
 	"testing"
 )
@@ -109,5 +112,30 @@ func TestGetRequestWrongCredentials(t *testing.T) {
 
 	if resp.StatusCode != 400 {
 		t.Errorf("Response status error should be: %v", resp.StatusCode)
+	}
+}
+
+// Check the PUT request in a valid copy resource
+func TestPutRequest(t *testing.T) {
+	setup()
+	defer tearDown()
+
+	values := url.Values{}
+	values.Add("first_name", "Slok2")
+	values.Add("last_name", "Wooloo")
+
+	resp, err := session.Put("https://api.copy.com/rest/user", values)
+
+	defer resp.Body.Close()
+	if _, err := io.Copy(os.Stdout, resp.Body); err != nil {
+		log.Fatal(err)
+	}
+
+	if err != nil {
+		t.Error("Expected no error in POST request")
+	}
+
+	if resp.StatusCode != 200 {
+		t.Errorf("Response status error shouldn't be: %v", resp.StatusCode)
 	}
 }
