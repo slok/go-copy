@@ -26,6 +26,22 @@ var (
 	defaultHttpClient = http.DefaultClient
 )
 
+// Oauth handshake neccesary data
+const (
+	appTokenEnv     = "APP_TOKEN"
+	appSecretEnv    = "APP_SECRET"
+	accessTokenEnv  = "ACCESS_TOKEN"
+	accessSecretEnv = "ACCESS_SECRET"
+)
+
+var (
+	appToken     string
+	appSecret    string
+	accessToken  string
+	accessSecret string
+	session      *Session
+)
+
 // Creates a new client. If no http client and URL the client will use the
 // default ones
 func NewClient(httpClient *http.Client, resourcesUrl string) (*Client, error) {

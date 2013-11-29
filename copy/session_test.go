@@ -4,6 +4,7 @@
 //      APP_SECRET
 //      ACCESS_TOKEN
 //      ACCESS_SECRET
+
 package copy
 
 import (
@@ -15,21 +16,6 @@ import (
 	"strings"
 	"testing"
 	"time"
-)
-
-const (
-	appTokenEnv     = "APP_TOKEN"
-	appSecretEnv    = "APP_SECRET"
-	accessTokenEnv  = "ACCESS_TOKEN"
-	accessSecretEnv = "ACCESS_SECRET"
-)
-
-var (
-	appToken     string
-	appSecret    string
-	accessToken  string
-	accessSecret string
-	session      *Session
 )
 
 func setupIntegration() {
