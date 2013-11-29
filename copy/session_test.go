@@ -32,7 +32,7 @@ var (
 	session      *Session
 )
 
-func setup() {
+func setupIntegration() {
 	appToken = os.Getenv(appTokenEnv)
 	appSecret = os.Getenv(appSecretEnv)
 	accessToken = os.Getenv(accessTokenEnv)
@@ -50,14 +50,14 @@ func setup() {
 	)
 }
 
-func tearDown() {
+func tearDownIntegration() {
 
 }
 
 // Checks if the credentials for the integration tests are set in the env vars
 func TestCredentialData(t *testing.T) {
-	setup()
-	defer tearDown()
+	setupIntegration()
+	defer tearDownIntegration()
 
 	if appToken == "" {
 		t.Error("Expected", appTokenEnv, "env var")
@@ -78,8 +78,8 @@ func TestCredentialData(t *testing.T) {
 
 // Check the GET request in a valid copy resource
 func TestGetRequest(t *testing.T) {
-	setup()
-	defer tearDown()
+	setupIntegration()
+	defer tearDownIntegration()
 
 	resp, err := session.Get(strings.Join([]string{defaultResourcesUrl, "user"}, "/"), nil, defaultHttpClient)
 
@@ -94,8 +94,8 @@ func TestGetRequest(t *testing.T) {
 
 // Check the GET request in an invalid copy resource with valid credentials
 func TestGetRequestWrongResource(t *testing.T) {
-	setup()
-	defer tearDown()
+	setupIntegration()
+	defer tearDownIntegration()
 
 	resp, _ := session.Get(strings.Join([]string{defaultResourcesUrl, "you shall not pass"}, "/"), nil, defaultHttpClient)
 
@@ -106,8 +106,8 @@ func TestGetRequestWrongResource(t *testing.T) {
 
 // Check the GET request in a valid copy resource with wrong credentials
 func TestGetRequestWrongCredentials(t *testing.T) {
-	setup()
-	defer tearDown()
+	setupIntegration()
+	defer tearDownIntegration()
 
 	session.TokenCreds.Secret = "You shall not pass!"
 
@@ -120,8 +120,8 @@ func TestGetRequestWrongCredentials(t *testing.T) {
 
 // Check the PUT request in a valid copy resource
 func TestPutRequest(t *testing.T) {
-	setup()
-	defer tearDown()
+	setupIntegration()
+	defer tearDownIntegration()
 
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
 	values := url.Values{
