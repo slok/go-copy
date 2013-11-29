@@ -91,7 +91,9 @@ func (s *Session) Put(urlStr string, form url.Values) (*http.Response, error) {
 		return nil, err
 	}
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-	req.Header.Set("Authorization", s.OauthClient.AuthorizationHeader(&s.TokenCreds, "PUT", req.URL, form))
+
+	// Do not send the body so, last param is nil
+	req.Header.Set("Authorization", s.OauthClient.AuthorizationHeader(&s.TokenCreds, "PUT", req.URL, nil))
 	return s.Do(req, nil)
 }
 
