@@ -7,11 +7,14 @@
 package copy
 
 import (
-	"io"
-	"log"
+	"bytes"
+	"fmt"
+	"math/rand"
 	"net/url"
 	"os"
+	"strings"
 	"testing"
+	"time"
 )
 
 const (
@@ -120,17 +123,15 @@ func TestPutRequest(t *testing.T) {
 	setup()
 	defer tearDown()
 
+	r := rand.New(rand.NewSource(time.Now().UnixNano()))
 	values := url.Values{
-		"first_name": {"Test"},
-		"last_name":  {"Test2"},
+		"first_name": {fmt.Sprintf("TestName %d", r.Intn(100))},
+		"last_name":  {fmt.Sprintf("TestSurname %d", r.Intn(100))},
 	}
 
 	resp, err := session.Put("https://api.copy.com/rest/user", values)
 
 	defer resp.Body.Close()
-	if _, err := io.Copy(os.Stdout, resp.Body); err != nil {
-		log.Fatal(err)
-	}
 
 	if err != nil {
 		t.Error("Expected no error in POST request")
@@ -138,5 +139,19 @@ func TestPutRequest(t *testing.T) {
 
 	if resp.StatusCode != 200 {
 		t.Errorf("Response status error shouldn't be: %v", resp.StatusCode)
+	}
+
+	// Get the response body to check the content
+	buf := new(bytes.Buffer)
+	_, err = buf.ReadFrom(resp.Body)
+
+	if err != nil {
+		t.Errorf("Error reading the response body")
+	}
+	respBody := buf.String()
+
+	if !strings.Contains(respBody, values["first_name"][0]) ||
+		!strings.Contains(respBody, values["last_name"][0]) {
+		t.Errorf("Not updated content with the REST API")
 	}
 }
