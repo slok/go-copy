@@ -11,8 +11,8 @@ var (
 	userService *UserService
 )
 
-func setupUserService() {
-	setup()
+func setupUserService(t *testing.T) {
+	setup(t)
 	userService = &UserService{client: client}
 }
 
@@ -22,7 +22,7 @@ func tearDownUserService() {
 
 // Checks if the credentials for the integration tests are set in the env vars
 func TestGetUser(t *testing.T) {
-	setupUserService()
+	setupUserService(t)
 	defer tearDownUserService()
 
 	mux.HandleFunc("/user",

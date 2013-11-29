@@ -14,13 +14,17 @@ var (
 )
 
 // Setups the mock server for all the app tests
-func setup() {
+func setup(t *testing.T) {
 	// test server
 	mux = http.NewServeMux()
 	server = httptest.NewServer(mux)
 	serverUrl, _ := url.Parse(server.URL)
 
-	client, _ = NewClient(nil, serverUrl.String())
+	var err error
+	client, err = NewClient(nil, serverUrl.String())
+	if err != nil {
+		t.Error(err.Error())
+	}
 }
 
 func tearDown() {

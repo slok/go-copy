@@ -39,7 +39,6 @@ var (
 	appSecret    string
 	accessToken  string
 	accessSecret string
-	session      *Session
 )
 
 // Creates a new client. If no http client and URL the client will use the

@@ -18,6 +18,10 @@ import (
 	"time"
 )
 
+var (
+	session *Session
+)
+
 func setupIntegration() {
 	appToken = os.Getenv(appTokenEnv)
 	appSecret = os.Getenv(appSecretEnv)
