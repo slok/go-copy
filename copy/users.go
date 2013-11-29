@@ -4,7 +4,7 @@ import ()
 
 // User represents the current user at Copy
 type User struct {
-	Id          int     `json:"id,omitempty"`
+	Id          string  `json:"id,omitempty"`
 	FirstName   string  `json:"first_name,omitempty"`
 	LastName    string  `json:"last_name,omitempty"`
 	Developer   bool    `json:"developer,omitempty"`
@@ -22,7 +22,7 @@ type Email struct {
 }
 
 type Storage struct {
-	Used  int `json:"confirmed,omitempty"`
+	Used  int `json:"used,omitempty"`
 	Quota int `json:"quota,omitempty"`
 	Saved int `json:"saved,omitempty"`
 }
