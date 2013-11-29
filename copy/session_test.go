@@ -29,7 +29,7 @@ var (
 	appSecret    string
 	accessToken  string
 	accessSecret string
-	session      Session
+	session      *Session
 )
 
 func setup() {
@@ -38,7 +38,7 @@ func setup() {
 	accessToken = os.Getenv(accessTokenEnv)
 	accessSecret = os.Getenv(accessSecretEnv)
 
-	session = NewSession(
+	session, _ = NewSession(
 		AppToken{
 			Token: appToken,
 			Key:   appSecret,
@@ -81,7 +81,7 @@ func TestGetRequest(t *testing.T) {
 	setup()
 	defer tearDown()
 
-	resp, err := session.Get("https://api.copy.com/rest/user", nil)
+	resp, err := session.Get(strings.Join([]string{defaultResourcesUrl, "user"}, "/"), nil, defaultHttpClient)
 
 	if err != nil {
 		t.Error("Expected no error in GET request")
@@ -97,7 +97,7 @@ func TestGetRequestWrongResource(t *testing.T) {
 	setup()
 	defer tearDown()
 
-	resp, _ := session.Get("https://api.copy.com/rest/userfail", nil)
+	resp, _ := session.Get(strings.Join([]string{defaultResourcesUrl, "you shall not pass"}, "/"), nil, defaultHttpClient)
 
 	if resp.StatusCode != 400 {
 		t.Errorf("Response status error should be: %v", resp.StatusCode)
@@ -111,7 +111,7 @@ func TestGetRequestWrongCredentials(t *testing.T) {
 
 	session.TokenCreds.Secret = "You shall not pass!"
 
-	resp, _ := session.Get("https://api.copy.com/rest/user", nil)
+	resp, _ := session.Get(strings.Join([]string{defaultResourcesUrl, "user"}, "/"), nil, defaultHttpClient)
 
 	if resp.StatusCode != 400 {
 		t.Errorf("Response status error should be: %v", resp.StatusCode)
@@ -129,7 +129,7 @@ func TestPutRequest(t *testing.T) {
 		"last_name":  {fmt.Sprintf("TestSurname %d", r.Intn(100))},
 	}
 
-	resp, err := session.Put("https://api.copy.com/rest/user", values)
+	resp, err := session.Put(strings.Join([]string{defaultResourcesUrl, "user"}, "/"), values, defaultHttpClient)
 
 	defer resp.Body.Close()
 

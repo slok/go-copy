@@ -32,7 +32,13 @@ type Session struct {
 	TokenCreds  oauth.Credentials
 }
 
-func NewSession(appToken AppToken, accessToken AccessToken) Session {
+// Creates a new Ouath session for making requests
+func NewSession(appToken AppToken, accessToken AccessToken) (*Session, error) {
+
+	if appToken.Token == "" || appToken.Key == "" ||
+		accessToken.Token == "" || accessToken.Key == "" {
+		return nil, errors.New("Could not create the session, Check access settings")
+	}
 
 	//Create app credentials
 	appCreds := oauth.Credentials{
@@ -52,14 +58,14 @@ func NewSession(appToken AppToken, accessToken AccessToken) Session {
 	}
 
 	//Return Session with the Oauth client created
-	return Session{
+	return &Session{
 		OauthClient: oauthClient,
 		TokenCreds:  tokenCred,
-	}
+	}, nil
 
 }
 
-func (s *Session) Get(urlStr string, form url.Values) (*http.Response, error) {
+func (s *Session) Get(urlStr string, form url.Values, httpClient *http.Client) (*http.Response, error) {
 	req, err := http.NewRequest("GET", urlStr, nil)
 
 	if err != nil {
@@ -73,19 +79,19 @@ func (s *Session) Get(urlStr string, form url.Values) (*http.Response, error) {
 	req.Header.Set("Authorization", s.OauthClient.AuthorizationHeader(&s.TokenCreds, "GET", req.URL, form))
 	req.URL.RawQuery = form.Encode()
 
-	return s.Do(req, nil)
+	return s.Do(req, httpClient)
 
 }
 
-func (s *Session) Post(urlStr string, form url.Values) (*http.Response, error) {
+func (s *Session) Post(urlStr string, form url.Values, httpClient *http.Client) (*http.Response, error) {
 	return nil, nil
 }
 
-func (s *Session) Delete(urlStr string, form url.Values) (*http.Response, error) {
+func (s *Session) Delete(urlStr string, form url.Values, httpClient *http.Client) (*http.Response, error) {
 	return nil, nil
 }
 
-func (s *Session) Put(urlStr string, form url.Values) (*http.Response, error) {
+func (s *Session) Put(urlStr string, form url.Values, httpClient *http.Client) (*http.Response, error) {
 	req, err := http.NewRequest("PUT", urlStr, strings.NewReader(form.Encode()))
 	if err != nil {
 		return nil, err
@@ -94,14 +100,10 @@ func (s *Session) Put(urlStr string, form url.Values) (*http.Response, error) {
 
 	// Do not send the body so, last param is nil
 	req.Header.Set("Authorization", s.OauthClient.AuthorizationHeader(&s.TokenCreds, "PUT", req.URL, nil))
-	return s.Do(req, nil)
+	return s.Do(req, httpClient)
 }
 
 func (s *Session) Do(request *http.Request, httpClient *http.Client) (*http.Response, error) {
-
-	if httpClient == nil {
-		httpClient = http.DefaultClient
-	}
 
 	// Custom headers for Copy API, [IMPORTANT!!]
 	customHeaders := map[string]string{
