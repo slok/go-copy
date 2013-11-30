@@ -37,4 +37,24 @@ func main() {
 	fmt.Printf("Stored(MB): %G of %G\n",
 		float64(user.Storage.Used)/byteToMegabyte, float64(user.Storage.Quota)/byteToMegabyte)
 
+	// We are going to change the name
+	fmt.Println("Inser name: ")
+	fmt.Scan(&(user.FirstName))
+	fmt.Println("Inser surname: ")
+	fmt.Scan(&(user.LastName))
+
+	err = userService.Update(user)
+	if err != nil {
+		fmt.Fprint(os.Stderr, "Could not update the user")
+		os.Exit(-1)
+	}
+
+	// Get again the user
+	user, err = userService.Get()
+	if err != nil {
+		fmt.Fprint(os.Stderr, "Could not retrieve the user")
+		os.Exit(-1)
+	}
+	fmt.Printf("User: %v %v\n", user.FirstName, user.LastName)
+
 }
