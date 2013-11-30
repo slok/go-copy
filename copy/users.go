@@ -1,6 +1,8 @@
 package copy
 
-import ()
+import (
+	"net/url"
+)
 
 // User represents the current user at Copy
 type User struct {
@@ -35,6 +37,12 @@ const (
 	endpointSuffix = "user"
 )
 
+func NewUserService(client *Client) *UserService {
+	us := new(UserService)
+	us.client = client
+	return us
+}
+
 // Get fetches the authenticated user
 //
 //https://www.copy.com/developer/documentation#api-calls/profile
@@ -42,4 +50,22 @@ func (us *UserService) Get() (*User, error) {
 	user := new(User)
 	us.client.Do("GET", endpointSuffix, nil, user)
 	return user, nil
+}
+
+// Updates the authenticated user
+//
+//https://www.copy.com/developer/documentation#api-calls/profile
+func (us *UserService) Update(user *User) error {
+
+	// Prepare the parameters to update (For now only frist and last name,
+	// see copy docs)
+	//
+	// FIX: Don't craft by hand
+	values := url.Values{
+		"first_name": {user.FirstName},
+		"last_name":  {user.LastName},
+	}
+
+	us.client.Do("PUT", endpointSuffix, values, user)
+	return nil
 }

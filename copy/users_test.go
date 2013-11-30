@@ -1,8 +1,10 @@
 package copy
 
 import (
+	"bytes"
 	"fmt"
 	"net/http"
+	"net/url"
 	"reflect"
 	"testing"
 )
@@ -89,6 +91,63 @@ func TestGetUser(t *testing.T) {
 	// Are bouth content equal?
 	if !reflect.DeepEqual(*user, perfectUser) {
 		t.Errorf("Users are not equal")
+	}
+
+}
+
+// Checks if the credentials for the integration tests are set in the env vars
+func TestUpdateUser(t *testing.T) {
+	setupUserService(t)
+	defer tearDownUserService()
+
+	//Our update data
+	name := "Chuck"
+	surname := "Norris"
+	changeFlag := "Changed"
+
+	perfectUser := User{
+		FirstName: name,
+		LastName:  surname,
+	}
+
+	mux.HandleFunc("/user",
+		func(w http.ResponseWriter, r *http.Request) {
+			testMethod(t, r, "PUT")
+
+			// Convert body to values
+			buf := new(bytes.Buffer)
+			buf.ReadFrom(r.Body)
+			values, _ := url.ParseQuery(buf.String())
+
+			// Get the data
+			reqName := values["first_name"][0]
+			reqSurname := values["last_name"][0]
+
+			// Check if is the same data and if, seth the flag up
+			if reqName != name {
+				w.Header().Set("Status", "400 Bad Request")
+			} else {
+				reqName = reqName + changeFlag
+			}
+
+			if reqSurname != surname {
+				w.Header().Set("Status", "400 Bad Request")
+			} else {
+				reqSurname = reqSurname + changeFlag
+			}
+
+			fmt.Fprintf(w,
+				`{
+                  "first_name": "%s",
+                  "last_name": "%s"
+              }`, reqName, reqSurname)
+		},
+	)
+
+	userService.Update(&perfectUser)
+
+	if perfectUser.FirstName != name+changeFlag || perfectUser.LastName != surname+changeFlag {
+		t.Errorf("Could not update the user")
 	}
 
 }
