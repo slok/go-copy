@@ -62,7 +62,7 @@ func TestClientCreation(t *testing.T) {
 	accessToken = os.Getenv(accessTokenEnv)
 	accessSecret = os.Getenv(accessSecretEnv)
 
-	_, err := NewClient(nil, "http://resources/fake", appToken, appSecret, accessToken, accessSecret)
+	_, err := NewClient(http.DefaultClient, "http://resources/fake", appToken, appSecret, accessToken, accessSecret)
 
 	if err != nil {
 		t.Error("Error creating a client")
@@ -77,7 +77,7 @@ func TestClientWrongParams(t *testing.T) {
 	accessToken = os.Getenv(accessTokenEnv)
 	accessSecret = ""
 
-	_, err := NewClient(nil, "http://resources/fake", appToken, appSecret, accessToken, accessSecret)
+	_, err := NewClient(http.DefaultClient, "http://resources/fake", appToken, appSecret, accessToken, accessSecret)
 
 	if err == nil {
 		t.Error("Should be an error when creating the client")
