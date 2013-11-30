@@ -1,3 +1,24 @@
+// Here starts all the mess :)
+//
+// You need a client to work with all the time, the client has all the neccessary
+// things to work with: URL, Session, result decoding logic...
+//
+// First create a client and the create services with the created client, these
+// services will be the ones that retrieve data from the Copy servers
+//
+//
+// The program has some global package variables
+//
+// defaultHttpClient: The default http client
+// appTokenEnv: The copy app oauth token
+// appSecretEnv: The copy app oauth secret
+// accessTokenEnv : The user authorized oauth token for the app
+// accessSecretEnv: The user authorized oauth secret for the app
+// session: The session for the oauth hand shaking
+// mux: the mux for the server mocking in the tests
+// client: The mighty client for the job ;)
+// server: The mock server for the tests
+
 package copy
 
 import (
@@ -6,7 +27,6 @@ import (
 	"errors"
 	"net/http"
 	"net/url"
-	"os"
 	"strings"
 )
 
@@ -34,6 +54,7 @@ const (
 	accessSecretEnv = "ACCESS_SECRET"
 )
 
+// Global vars for the tokens
 var (
 	appToken     string
 	appSecret    string
@@ -43,7 +64,9 @@ var (
 
 // Creates a new client. If no http client and URL the client will use the
 // default ones
-func NewClient(httpClient *http.Client, resourcesUrl string) (*Client, error) {
+func NewClient(httpClient *http.Client, resourcesUrl string,
+	appToken string, appSecret string,
+	accessToken string, accessSecret string) (*Client, error) {
 
 	c := new(Client)
 
@@ -58,13 +81,6 @@ func NewClient(httpClient *http.Client, resourcesUrl string) (*Client, error) {
 	} else {
 		c.resourcesUrl = resourcesUrl
 	}
-
-	// Create session
-	//FIX: For now use Env vars, next params and/or conf file
-	appToken = os.Getenv(appTokenEnv)
-	appSecret = os.Getenv(appSecretEnv)
-	accessToken = os.Getenv(accessTokenEnv)
-	accessSecret = os.Getenv(accessSecretEnv)
 
 	session, err := NewSession(
 		AppToken{
@@ -84,6 +100,12 @@ func NewClient(httpClient *http.Client, resourcesUrl string) (*Client, error) {
 		c.session = session
 		return c, nil
 	}
+}
+
+// Returns a default client, normally we will use this
+func NewDefaultClient(appToken string, appSecret string,
+	accessToken string, accessSecret string) (*Client, error) {
+	return NewClient(nil, "", appToken, appSecret, accessToken, accessSecret)
 }
 
 // Makes the client request based on the url, method, values and returns
