@@ -51,7 +51,74 @@ func TestGetTopLevelMeta(t *testing.T) {
                      }
                   }
                ],
-               "children_count":1
+               "children_count":1,
+               "link_name":"link test",
+               "token":"32234dsad",
+               "permissions":"all",
+               "public":true,
+               "size":3123123,
+               "date_last_synced":32131232,
+               "share":true,
+               "recipient_confirmed":true,
+               "object_available":true,
+               "links": [
+                   {
+                        "id":"link1",
+                        "public":true,
+                        "expires":true,
+                        "expired":true,
+                        "url":"dsafdsfdsaxfwf",
+                        "url_short":"dsadsad",
+                        "recipients": [
+                            {
+                                "contact_Type":"gfgdfd",
+                                "contact_id":"fgffsd",
+                                "contact_source":"htgdffvdb",
+                                "user_id":"3343",
+                                "first_name":"ffgfgf",
+                                "last_name":"grfesa",
+                                "email":"fsdfdsfds",
+                                "permissions":"all",
+                                "emails": [
+                                     {
+                                            "confirmed":true,
+                                            "primary":true,
+                                            "email":"thomashunter@example.com",
+                                            "gravatar":"eca957c6552e783627a0ced1035e1888"
+                                    }
+                                ]
+                            }
+                        ],
+                        "creator_id":"htgdffsdd",
+                        "confirmation_required": true
+                    }
+               ],
+               "revisions": [
+                    {
+                        "revision_id":"231312",
+                        "modified_time":"32324",
+                        "size":31232,
+                        "latest":true,
+                        "conflict":4324,
+                        "id":"dsdsd",
+                        "type":"sdsad",
+                        "creator":{
+                            "user_id":"44342",
+                            "created_time":323423,
+                            "email":"fdfdsf@dsadsa.com",
+                            "first_name":"sadasd",
+                            "last_name":"sdsadsafds",
+                            "confirmed":true
+                        }
+                    }
+                ],
+                "url":"dasdsafdasddfdf",
+                "revision_id":31312,
+                "thumb":"test thumb",
+                "thumb_original_dimensions":{
+                    "width":32432,
+                    "height":53543
+                }
             }`)
 		},
 	)
@@ -78,7 +145,74 @@ func TestGetTopLevelMeta(t *testing.T) {
 				},
 			},
 		},
-		ChildrenCount: 1,
+		ChildrenCount:      1,
+		LinkName:           "link test",
+		Token:              "32234dsad",
+		Permissions:        "all",
+		Public:             true,
+		Size:               3123123,
+		DateLastSynced:     32131232,
+		Share:              true,
+		RecipientConfirmed: true,
+		ObjectAvailable:    true,
+		Links: []Link{
+			Link{
+				Id:       "link1",
+				Public:   true,
+				Expires:  true,
+				Expired:  true,
+				Url:      "dsafdsfdsaxfwf",
+				UrlShort: "dsadsad",
+				Recipients: []Recipient{
+					Recipient{
+						ContactType:   "gfgdfd",
+						ContactId:     "fgffsd",
+						ContactSource: "htgdffvdb",
+						UserId:        "3343",
+						FirstName:     "ffgfgf",
+						LastName:      "grfesa",
+						Email:         "fsdfdsfds",
+						Permissions:   "all",
+						Emails: []Email{
+							Email{
+								Confirmed: true,
+								Primary:   true,
+								Email:     "thomashunter@example.com",
+								Gravatar:  "eca957c6552e783627a0ced1035e1888",
+							},
+						},
+					},
+				},
+				CreatorId:            "htgdffsdd",
+				ConfirmationRequired: true,
+			},
+		},
+		Revisions: []Revision{
+			Revision{
+				RevisionId:   "231312",
+				ModifiedTime: "32324",
+				Size:         31232,
+				Latest:       true,
+				Conflict:     4324,
+				Id:           "dsdsd",
+				Type:         "sdsad",
+				Creator: Creator{
+					UserId:      "44342",
+					CreatedTime: 323423,
+					Email:       "fdfdsf@dsadsa.com",
+					FirstName:   "sadasd",
+					LastName:    "sdsadsafds",
+					Confirmed:   true,
+				},
+			},
+		},
+		Url:        "dasdsafdasddfdf",
+		RevisionId: 31312,
+		Thumb:      "test thumb",
+		ThumbOriginalDimensions: ThumbOriginalDimensions{
+			Width:  32432,
+			Height: 53543,
+		},
 	}
 
 	// Are bouth content equal?
