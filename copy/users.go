@@ -48,7 +48,7 @@ func NewUserService(client *Client) *UserService {
 //https://www.copy.com/developer/documentation#api-calls/profile
 func (us *UserService) Get() (*User, error) {
 	user := new(User)
-	us.client.Do("GET", endpointSuffix, nil, user)
+	us.client.DoRequestDecoding("GET", endpointSuffix, nil, user)
 	return user, nil
 }
 
@@ -66,6 +66,6 @@ func (us *UserService) Update(user *User) error {
 		"last_name":  {user.LastName},
 	}
 
-	us.client.Do("PUT", endpointSuffix, values, user)
+	us.client.DoRequestDecoding("PUT", endpointSuffix, values, user)
 	return nil
 }

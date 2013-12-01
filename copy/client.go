@@ -112,7 +112,7 @@ func NewDefaultClient(appToken string, appSecret string,
 // the response is the response of the call
 // the value is inside the t param (you should pass a pointer because will
 // mutate inside the method)
-func (c *Client) Do(method string, urlStr string, form url.Values, v interface{}) (*http.Response, error) {
+func (c *Client) DoRequestDecoding(method string, urlStr string, form url.Values, v interface{}) (*http.Response, error) {
 	var resp *http.Response
 	var err error
 

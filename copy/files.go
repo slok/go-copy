@@ -106,15 +106,15 @@ func NewFileService(client *Client) *FileService {
 // https://www.copy.com/developer/documentation#api-calls/filesystem
 func (fs *FileService) GetTopLevelMeta() (*Meta, error) {
 	meta := new(Meta)
-	fs.client.Do("GET", metaTopLevelSuffix, nil, meta)
+	fs.client.DoRequestDecoding("GET", metaTopLevelSuffix, nil, meta)
 	return meta, nil
 }
 
-// Returns the metadata of the provided path as String
+// Returns the metadata of a file
 //
 // https://www.copy.com/developer/documentation#api-calls/filesystem
-func (fs *FileService) Get(path string) (*Meta, error) {
+func (fs *FileService) GetMeta(path string) (*Meta, error) {
 	meta := new(Meta)
-	fs.client.Do("GET", strings.Join([]string{firstLevelSuffix, path}, "/"), nil, meta)
+	fs.client.DoRequestDecoding("GET", strings.Join([]string{firstLevelSuffix, path}, "/"), nil, meta)
 	return meta, nil
 }
