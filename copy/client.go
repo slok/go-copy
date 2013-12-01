@@ -110,7 +110,7 @@ func NewDefaultClient(appToken string, appSecret string,
 
 // Makes the client request based on the url, method, values and returns
 // the response is the response of the call
-// the value is inside the t param (you should pass a pointer because will
+// the value is inside the v param (you should pass a pointer because will
 // mutate inside the method)
 func (c *Client) DoRequestDecoding(method string, urlStr string, form url.Values, v interface{}) (*http.Response, error) {
 	var resp *http.Response
@@ -123,18 +123,18 @@ func (c *Client) DoRequestDecoding(method string, urlStr string, form url.Values
 		resp, err = c.session.Get(endpoint, form, c.httpClient)
 
 	case "POST":
-		resp, err = c.session.Post(endpoint, form, c.httpClient)
+		//resp, err = c.session.Post(endpoint, form, c.httpClient)
 
 	case "PUT":
 		resp, err = c.session.Put(endpoint, form, c.httpClient)
 
 	case "DELETE":
-		resp, err = c.session.Delete(endpoint, form, c.httpClient)
+		//resp, err = c.session.Delete(endpoint, form, c.httpClient)
 
 	}
 
 	if err != nil || resp == nil {
-		return nil, err
+		return nil, errors.New("Error making the request")
 	}
 
 	defer resp.Body.Close()
