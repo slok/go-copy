@@ -23,8 +23,8 @@ func tearDownFileService() {
 	defer tearDown()
 }
 
-// Checks if the credentials for the integration tests are set in the env vars
-func TestGetTopLevelMeta(t *testing.T) {
+// Checks json decoding for the meta object
+func TestJsonMetaDecoding(t *testing.T) {
 	setupFileService(t)
 	defer tearDownFileService()
 	mux.HandleFunc("/meta",
