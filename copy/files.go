@@ -20,7 +20,7 @@ type Meta struct {
 	Share                   bool                    `json:"share,omitempty"`
 	Children                []Meta                  `json:"children,omitempty"` // Inception :D
 	Counts                  Count                   `json:"counts,omitempty"`   // Array? (sometimes? ask copy.com)
-	RecipientConfirmed      bool                    `json:""recipient_confirmed",omitempty"`
+	RecipientConfirmed      bool                    `json:"recipient_confirmed",omitempty"`
 	ObjectAvailable         bool                    `json:"object_available,omitempty"`
 	Links                   []Link                  `json:"links,omitempty"`
 	Revisions               []Revision              `json:"revisions,omitempty"`
@@ -38,15 +38,15 @@ type Count struct {
 }
 
 type Link struct {
-	Id                    string      `json:"id,omitempty"`
-	Public                bool        `json:"public,omitempty"`
-	Expires               bool        `json:"expires,omitempty"`
-	Expired               bool        `json:"expired,omitempty"`
-	Url                   string      `json:"url,omitempty"`
-	UrlShort              string      `json:"url_short,omitempty"`
-	Recipients            []Recipient `json:"recipients,omitempty"`
-	CreatorId             string      `json:"creator_id,omitempty"`
-	Confirmation_required bool        `json:"confirmation_required,omitempty"`
+	Id                   string      `json:"id,omitempty"`
+	Public               bool        `json:"public,omitempty"`
+	Expires              bool        `json:"expires,omitempty"`
+	Expired              bool        `json:"expired,omitempty"`
+	Url                  string      `json:"url,omitempty"`
+	UrlShort             string      `json:"url_short,omitempty"`
+	Recipients           []Recipient `json:"recipients,omitempty"`
+	CreatorId            string      `json:"creator_id,omitempty"`
+	ConfirmationRequired bool        `json:"confirmation_required,omitempty"`
 }
 type Recipient struct {
 	ContactType   string  `json:"contact_type,omitempty"`
@@ -107,5 +107,14 @@ func NewFileService(client *Client) *FileService {
 func (fs *FileService) GetTopLevelMeta() (*Meta, error) {
 	meta := new(Meta)
 	fs.client.Do("GET", metaTopLevelSuffix, nil, meta)
+	return meta, nil
+}
+
+// Returns the metadata of the provided path as String
+//
+// https://www.copy.com/developer/documentation#api-calls/filesystem
+func (fs *FileService) Get(path string) (*Meta, error) {
+	meta := new(Meta)
+	fs.client.Do("GET", strings.Join([]string{firstLevelSuffix, path}, "/"), nil, meta)
 	return meta, nil
 }
