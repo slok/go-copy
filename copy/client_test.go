@@ -3,6 +3,7 @@ package copy
 import (
 	"bytes"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -260,4 +261,39 @@ func TestDoRequestDecodingWrongMethod(t *testing.T) {
 		t.Errorf("FAKE method should raise an error")
 	}
 
+}
+
+// Check a content Request
+func TestDoRequestContent(t *testing.T) {
+
+	// Prepare the mock server
+	setup(t)
+	defer tearDown()
+
+	// Read the file to test
+	file, err := ioutil.ReadFile("client_test.go")
+
+	if err != nil {
+		t.Error(err.Error())
+	}
+
+	mux.HandleFunc("/do-request-decoding",
+		func(w http.ResponseWriter, r *http.Request) {
+			testMethod(t, r, "GET")
+			w.Write(file)
+		},
+	)
+
+	resp, err := client.DoRequestContent("do-request-decoding")
+	defer resp.Body.Close()
+
+	file2, err := ioutil.ReadAll(resp.Body)
+
+	if err != nil {
+		t.Error(err.Error())
+	}
+
+	if !bytes.Equal(file, file2) {
+		t.Errorf("contents are not equal")
+	}
 }

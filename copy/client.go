@@ -153,3 +153,24 @@ func (c *Client) DoRequestDecoding(method string, urlStr string, form url.Values
 
 	return resp, nil
 }
+
+// Makes the client request based on the url.
+//
+// This will be binary data body so we don't process the request
+func (c *Client) DoRequestContent(urlStr string) (*http.Response, error) {
+	var resp *http.Response
+	var err error
+
+	endpoint := strings.Join([]string{c.resourcesUrl, urlStr}, "/")
+
+	resp, err = c.session.Get(endpoint, nil, c.httpClient)
+
+	if err != nil || resp == nil {
+		return nil, errors.New("Error making the request")
+	}
+
+	// Close the body when needed
+	//defer resp.Body.Close()
+
+	return resp, nil
+}
