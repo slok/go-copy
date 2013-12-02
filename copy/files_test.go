@@ -1,12 +1,12 @@
 package copy
 
 import (
-	//"bytes"
+	"bytes"
 	"fmt"
+	"io/ioutil"
 	"net/http"
-	//"net/url"
-	//"os"
 	"reflect"
+	"strings"
 	"testing"
 )
 
@@ -219,37 +219,38 @@ func TestJsonMetaDecoding(t *testing.T) {
 	if !reflect.DeepEqual(*fileMeta, perfectFileMeta) {
 		t.Errorf("Metas are not equal")
 	}
+}
 
-	/*
-		//Prepare the neccesary data
-		appToken := os.Getenv("APP_TOKEN")
-		appSecret := os.Getenv("APP_SECRET")
-		accessToken := os.Getenv("ACCESS_TOKEN")
-		accessSecret := os.Getenv("ACCESS_SECRET")
+// Checks json decoding for the meta object
+func TestJsonGetFile(t *testing.T) {
+	setupFileService(t)
+	defer tearDownFileService()
 
-		// Create the client
-		client, err := NewDefaultClient(appToken, appSecret, accessToken, accessSecret)
-		if err != nil {
-			fmt.Fprint(os.Stderr, "Could not create the client, review the auth params")
-			os.Exit(-1)
-		}
+	filename := "client_test.go"
+	// Read the file to test
+	file, err := ioutil.ReadFile(filename)
 
-		//Create the service (in this case for a user)
-		fileService = NewFileService(client)
+	if err != nil {
+		t.Error(err.Error())
+	}
 
-		//Play with the lib :)
-		fileMeta, err := fileService.GetTopLevelMeta()
-		if err != nil {
-			fmt.Fprint(os.Stderr, "Could not retrieve the user")
-			os.Exit(-1)
-		}
-	*/
-	//Print the object with reflection (used for debugging)
-	/*val := reflect.ValueOf(fileMeta).Elem()
-	for i := 0; i < val.NumField(); i++ {
-		valueField := val.Field(i)
-		typeField := val.Type().Field(i)
+	mux.HandleFunc(strings.Join([]string{"", filesTopLevelSuffix, filename}, "/"),
+		func(w http.ResponseWriter, r *http.Request) {
+			testMethod(t, r, "GET")
+			w.Write(file)
+		},
+	)
 
-		fmt.Printf("%s\t: %v\n", typeField.Name, valueField.Interface())
-	}*/
+	fileReader, _ := fileService.GetFile(filename)
+	defer fileReader.Close()
+
+	file2, err := ioutil.ReadAll(fileReader)
+
+	if err != nil {
+		t.Error(err.Error())
+	}
+
+	if !bytes.Equal(file, file2) {
+		t.Errorf("contents are not equal")
+	}
 }

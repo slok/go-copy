@@ -1,6 +1,7 @@
 package copy
 
 import (
+	"io"
 	"strings"
 )
 
@@ -92,6 +93,8 @@ type FileService struct {
 var (
 	metaTopLevelSuffix  = "meta"
 	firstLevelSuffix    = strings.Join([]string{metaTopLevelSuffix, "copy"}, "/")
+	listRevisionsSuffix = strings.Join([]string{metaTopLevelSuffix, "%v@activity"}, "/")
+	revisionSuffix      = strings.Join([]string{metaTopLevelSuffix, "@time:%d"}, "/")
 	filesTopLevelSuffix = "files"
 )
 
@@ -117,4 +120,63 @@ func (fs *FileService) GetMeta(path string) (*Meta, error) {
 	meta := new(Meta)
 	fs.client.DoRequestDecoding("GET", strings.Join([]string{firstLevelSuffix, path}, "/"), nil, meta)
 	return meta, nil
+}
+
+// Returns all the metadata revisions of a file
+//
+// https://www.copy.com/developer/documentation#api-calls/filesystem
+func (fs *FileService) ListRevisionsMeta(path string) (*Meta, error) {
+	return nil, nil
+}
+
+// Returns the metadata in an specified revision
+//
+// https://www.copy.com/developer/documentation#api-calls/filesystem
+func (fs *FileService) GetRevisionMeta(path string, time int) (*Meta, error) {
+	return nil, nil
+}
+
+// Returns the file content. the user NEEDS TO CLOSE the buffer after using in
+//
+// https://www.copy.com/developer/documentation#api-calls/filesystem
+func (fs *FileService) GetFile(path string) (io.ReadCloser, error) {
+
+	resp, _ := fs.client.DoRequestContent(strings.Join([]string{filesTopLevelSuffix, path}, "/"))
+
+	return resp.Body, nil
+}
+
+// Deletes the file content
+//
+// https://www.copy.com/developer/documentation#api-calls/filesystem
+func (fs *FileService) DeleteFile(path string) error {
+	return nil
+}
+
+// Uploads the file
+//
+// https://www.copy.com/developer/documentation#api-calls/filesystem
+func (fs *FileService) UploadFile(path string, file []byte) error {
+	return nil
+}
+
+// Renames the file
+//
+// https://www.copy.com/developer/documentation#api-calls/filesystem
+func (fs *FileService) RenameFile(path string, newName string) error {
+	return nil
+}
+
+// Moves the file
+//
+// https://www.copy.com/developer/documentation#api-calls/filesystem
+func (fs *FileService) MoveFile(path string, newPath string) error {
+	return nil
+}
+
+// Creates a directory
+//
+// https://www.copy.com/developer/documentation#api-calls/filesystem
+func (fs *FileService) CreateDirectory(path string) error {
+	return nil
 }
