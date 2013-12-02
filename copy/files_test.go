@@ -16,7 +16,7 @@ var (
 
 func setupFileService(t *testing.T) {
 	setup(t)
-	fileService = &FileService{client: client}
+	fileService = NewFileService(client)
 }
 
 func tearDownFileService() {

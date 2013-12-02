@@ -247,7 +247,7 @@ func TestDoRequestDecodingPUT(t *testing.T) {
 	}
 }
 
-// Check that the request decoding is ok with PUT
+// Check wrong request
 func TestDoRequestDecodingWrongMethod(t *testing.T) {
 	// Prepare the mock server
 	setup(t)

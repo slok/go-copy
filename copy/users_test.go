@@ -15,7 +15,7 @@ var (
 
 func setupUserService(t *testing.T) {
 	setup(t)
-	userService = &UserService{client: client}
+	userService = NewUserService(client)
 }
 
 func tearDownUserService() {
@@ -90,7 +90,7 @@ func TestGetUser(t *testing.T) {
 
 	// Are bouth content equal?
 	if !reflect.DeepEqual(*user, perfectUser) {
-		t.Errorf("Users are not equal")
+		t.Errorf("objects are not equal")
 	}
 
 }
