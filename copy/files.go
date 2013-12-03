@@ -113,7 +113,16 @@ func NewFileService(client *Client) *FileService {
 // https://www.copy.com/developer/documentation#api-calls/filesystem
 func (fs *FileService) GetTopLevelMeta() (*Meta, error) {
 	meta := new(Meta)
-	fs.client.DoRequestDecoding("GET", metaTopLevelSuffix, nil, meta)
+	resp, err := fs.client.DoRequestDecoding("GET", metaTopLevelSuffix, nil, meta)
+
+	if err != nil {
+		return nil, err
+	}
+
+	if resp.StatusCode >= 400 { // 400s and 500s
+		return nil, errors.New(fmt.Sprintf("Client response: %d", resp.StatusCode))
+	}
+
 	return meta, nil
 }
 
@@ -122,7 +131,16 @@ func (fs *FileService) GetTopLevelMeta() (*Meta, error) {
 // https://www.copy.com/developer/documentation#api-calls/filesystem
 func (fs *FileService) GetMeta(path string) (*Meta, error) {
 	meta := new(Meta)
-	fs.client.DoRequestDecoding("GET", strings.Join([]string{firstLevelSuffix, path}, "/"), nil, meta)
+	resp, err := fs.client.DoRequestDecoding("GET", strings.Join([]string{firstLevelSuffix, path}, "/"), nil, meta)
+
+	if err != nil {
+		return nil, err
+	}
+
+	if resp.StatusCode >= 400 { // 400s and 500s
+		return nil, errors.New(fmt.Sprintf("Client response: %d", resp.StatusCode))
+	}
+
 	return meta, nil
 }
 
@@ -145,7 +163,15 @@ func (fs *FileService) GetRevisionMeta(path string, time int) (*Meta, error) {
 // https://www.copy.com/developer/documentation#api-calls/filesystem
 func (fs *FileService) GetFile(path string) (io.ReadCloser, error) {
 
-	resp, _ := fs.client.DoRequestContent(strings.Join([]string{filesTopLevelSuffix, path}, "/"))
+	resp, err := fs.client.DoRequestContent(strings.Join([]string{filesTopLevelSuffix, path}, "/"))
+
+	if err != nil {
+		return nil, err
+	}
+
+	if resp.StatusCode >= 400 { // 400s and 500s
+		return nil, errors.New(fmt.Sprintf("Client response: %d", resp.StatusCode))
+	}
 
 	return resp.Body, nil
 }
@@ -193,7 +219,16 @@ func (fs *FileService) UploadFile(filePath, uploadPath string, overwrite bool) e
 	uploadPath = strings.Join([]string{filesTopLevelSuffix, uploadPath}, "/")
 	uploadPath = strings.Join([]string{uploadPath, options}, "")
 
-	fs.client.DoRequestMultipart(filePath, uploadPath, filename)
+	res, err := fs.client.DoRequestMultipart(filePath, uploadPath, filename)
+
+	if err != nil {
+		return err
+	}
+
+	if res.StatusCode >= 400 { // 400s and 500s
+		return errors.New(fmt.Sprintf("Client response: %d", res.StatusCode))
+	}
+
 	return nil
 }
 
