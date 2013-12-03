@@ -1,7 +1,10 @@
 package copy
 
 import (
+	"errors"
+	"fmt"
 	"io"
+	"path/filepath"
 	"strings"
 )
 
@@ -96,6 +99,7 @@ var (
 	listRevisionsSuffix = strings.Join([]string{metaTopLevelSuffix, "%v@activity"}, "/")
 	revisionSuffix      = strings.Join([]string{metaTopLevelSuffix, "@time:%d"}, "/")
 	filesTopLevelSuffix = "files"
+	overwriteOption     = "?overwrite=%t"
 )
 
 func NewFileService(client *Client) *FileService {
@@ -153,10 +157,43 @@ func (fs *FileService) DeleteFile(path string) error {
 	return nil
 }
 
-// Uploads the file
+// Uploads the file. Loads the file from the file path and uploads to the
+// uploadPath.
+// For example:
+//   filePath: /home/slok/myFile.txt
+//   UploadPath: test/uploads/something.txt
 //
 // https://www.copy.com/developer/documentation#api-calls/filesystem
-func (fs *FileService) UploadFile(path string, file []byte) error {
+func (fs *FileService) UploadFile(filePath, uploadPath string, overwrite bool) error {
+
+	// Sanitize path
+	uploadPath = strings.Trim(uploadPath, "/")
+
+	// Get upload filename
+	filename := filepath.Base(uploadPath)
+
+	if filename == "" {
+		return errors.New("Wrong uploadPath")
+	}
+
+	// Get upload path
+	uploadPath = filepath.Dir(uploadPath)
+
+	if uploadPath == "." { // Check if is at root, if so delete the point returned by Dir
+		uploadPath = ""
+	}
+
+	// Set overwrite option
+	options := fmt.Sprintf(overwriteOption, overwrite)
+
+	// Sanitize path again
+	uploadPath = strings.Trim(uploadPath, "/")
+
+	// Create final paths
+	uploadPath = strings.Join([]string{filesTopLevelSuffix, uploadPath}, "/")
+	uploadPath = strings.Join([]string{uploadPath, options}, "")
+
+	fs.client.DoRequestMultipart(filePath, uploadPath, filename)
 	return nil
 }
 
