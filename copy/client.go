@@ -31,7 +31,6 @@ import (
 	"net/http"
 	"net/url"
 	"os"
-	"path/filepath"
 	"strings"
 )
 
@@ -183,14 +182,9 @@ func (c *Client) DoRequestContent(urlStr string) (*http.Response, error) {
 
 // Makes the client request for uploading multipart request
 //
-func (c *Client) DoRequestMultipart(filePath, uploadPath string) (*http.Response, error) {
+func (c *Client) DoRequestMultipart(filePath, uploadPath, filename string) (*http.Response, error) {
 
-	base := filepath.Dir(uploadPath)
-	if base == "." { // Check if is at root, if so delete the point returned by Dir
-		base = ""
-	}
-
-	endpoint := strings.Join([]string{c.resourcesUrl, base}, "/")
+	endpoint := strings.Join([]string{c.resourcesUrl, uploadPath}, "/")
 
 	// Do sequential upload (not all in memory)
 
@@ -214,7 +208,7 @@ func (c *Client) DoRequestMultipart(filePath, uploadPath string) (*http.Response
 		defer writer.Close()
 		defer file.Close()
 
-		part, _ := multiWriter.CreateFormFile("file", filepath.Base(filePath))
+		part, _ := multiWriter.CreateFormFile("file", filename)
 
 		// Copy on demand
 		io.Copy(part, file)
@@ -235,7 +229,7 @@ func (c *Client) DoRequestMultipart(filePath, uploadPath string) (*http.Response
 
 	body := &bytes.Buffer{}
 	multiWriter := multipart.NewWriter(body)
-	part, err := multiWriter.CreateFormFile("file", filepath.Base(filePath))
+	part, err := multiWriter.CreateFormFile("file", filename)
 	if err != nil {
 		return nil, err
 	}
