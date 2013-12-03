@@ -229,7 +229,9 @@ func (c *Client) DoRequestMultipart(filePath, uploadPath string) (*http.Response
 
 	//-----------------------------------------------------------
 	// FIXME: See above, use pipes to read/write and don't load in memory
-	defer file.Close()
+	// From the docs: The maximum filesize of an upload is 1GB. An API endpoint
+	// supporting chunked file uploading is planned for circumventing this limitation.
+	//defer file.Close()
 
 	body := &bytes.Buffer{}
 	multiWriter := multipart.NewWriter(body)
