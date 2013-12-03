@@ -3,6 +3,7 @@ package copy
 import (
 	"bytes"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
@@ -295,5 +296,46 @@ func TestDoRequestContent(t *testing.T) {
 
 	if !bytes.Equal(file, file2) {
 		t.Errorf("contents are not equal")
+	}
+}
+
+// Check a content Request
+func TestDoRequestMultipart(t *testing.T) {
+
+	// Prepare the mock server
+	setup(t)
+	defer tearDown()
+
+	filePath := "client_test.go"
+	// Read the file to test
+	origFile, err := ioutil.ReadFile(filePath)
+
+	if err != nil {
+		t.Error(err.Error())
+	}
+
+	mux.HandleFunc("/do-request-multipart",
+		func(w http.ResponseWriter, r *http.Request) {
+			testMethod(t, r, "POST")
+			// Check that upload is ok
+			r.ParseMultipartForm(100000)
+			form := r.MultipartForm
+
+			files, _ := form.File["file"]
+			file, _ := files[0].Open()
+			defer file.Close()
+
+			buf := new(bytes.Buffer)
+			io.Copy(buf, file)
+
+			if !bytes.Equal(origFile, buf.Bytes()) {
+				t.Errorf("contents are not equal")
+			}
+		},
+	)
+
+	client.DoRequestMultipart(filePath, "do-request-multipart/client_test.go")
+	if err != nil {
+		t.Error(err.Error())
 	}
 }

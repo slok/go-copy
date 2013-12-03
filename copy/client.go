@@ -25,8 +25,13 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
+	"fmt"
+	"io"
+	"mime/multipart"
 	"net/http"
 	"net/url"
+	"os"
+	"path/filepath"
 	"strings"
 )
 
@@ -96,10 +101,11 @@ func NewClient(httpClient *http.Client, resourcesUrl string,
 	if err != nil || appToken == "" || appSecret == "" || accessToken == "" ||
 		accessSecret == "" {
 		return nil, errors.New("Could not create the client, Check access settings")
-	} else {
-		c.session = session
-		return c, nil
 	}
+
+	c.session = session
+	return c, nil
+
 }
 
 // Returns a default client, normally we will use this
@@ -169,8 +175,80 @@ func (c *Client) DoRequestContent(urlStr string) (*http.Response, error) {
 		return nil, errors.New("Error making the request")
 	}
 
-	// Close the body when needed
+	// Don't close the body is a chunked HTTP response
 	//defer resp.Body.Close()
 
 	return resp, nil
+}
+
+// Makes the client request for uploading multipart request
+//
+func (c *Client) DoRequestMultipart(filePath, uploadPath string) (*http.Response, error) {
+
+	base := filepath.Dir(uploadPath)
+	if base == "." { // Check if is at root, if so delete the point returned by Dir
+		base = ""
+	}
+
+	endpoint := strings.Join([]string{c.resourcesUrl, base}, "/")
+
+	// Do sequential upload (not all in memory)
+
+	// Get our file reader
+	file, err := os.Open(filePath)
+	if err != nil {
+		return nil, err
+	}
+
+	// The key is to use a pipe
+	// (reading the file will feed the writer and then the reader will be in the multipart body
+	// so when the multipart request a chunk the reader will "call" the writer and this will
+	// read from the file)
+	//
+	// File -> FileReader -> Writer -> (Multipart wrapp magic) -> Reader -> Multipart body
+	/*reader, writer := io.Pipe()
+	multiWriter := multipart.NewWriter(writer)
+
+	// The sequential write (read from file) will be in a goroutine
+	go func() {
+		defer writer.Close()
+		defer file.Close()
+
+		part, _ := multiWriter.CreateFormFile("file", filepath.Base(filePath))
+
+		// Copy on demand
+		io.Copy(part, file)
+		multiWriter.Close()
+	}()
+
+	// This will be custom because the multipart is trickier thatn a normal request
+	req, err := http.NewRequest("POST", endpoint, reader)
+	if err != nil {
+		return nil, err
+	}*/
+
+	//-----------------------------------------------------------
+	// FIXME: See above, use pipes to read/write and don't load in memory
+	defer file.Close()
+
+	body := &bytes.Buffer{}
+	multiWriter := multipart.NewWriter(body)
+	part, err := multiWriter.CreateFormFile("file", filepath.Base(filePath))
+	if err != nil {
+		return nil, err
+	}
+	_, err = io.Copy(part, file)
+	multiWriter.Close()
+	req, err := http.NewRequest("POST", endpoint, body)
+	if err != nil {
+		return nil, err
+	}
+	//-----------------------------------------------------------
+
+	fileInfo, _ := file.Stat()
+	req.Header.Set("Authorization", c.session.OauthClient.AuthorizationHeader(&c.session.TokenCreds, "POST", req.URL, nil))
+	req.Header.Set("Content-Type", multiWriter.FormDataContentType())
+	req.Header.Set("Content-Length", fmt.Sprintf("%d", fileInfo.Size()))
+
+	return c.session.Do(req, c.httpClient)
 }
