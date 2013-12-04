@@ -93,6 +93,12 @@ func TestGetUser(t *testing.T) {
 		t.Errorf("objects are not equal")
 	}
 
+	// Test bad request
+	server.Close()
+	if _, err := userService.Get(); err == nil {
+		t.Errorf("No server up, should be an error")
+	}
+
 }
 
 // Checks if the credentials for the integration tests are set in the env vars
@@ -150,4 +156,9 @@ func TestUpdateUser(t *testing.T) {
 		t.Errorf("Could not update the user")
 	}
 
+	// Test bad request
+	server.Close()
+	if err := userService.Update(&perfectUser); err == nil {
+		t.Errorf("No server up, should be an error")
+	}
 }

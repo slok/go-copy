@@ -220,6 +220,13 @@ func TestJsonMetaDecoding(t *testing.T) {
 	if !reflect.DeepEqual(*fileMeta, perfectFileMeta) {
 		t.Errorf("Metas are not equal")
 	}
+
+	// Test bad request
+	server.Close()
+	if _, err := fileService.GetTopLevelMeta(); err == nil {
+		t.Errorf("No server up, should be an error")
+	}
+
 }
 
 func TestGetMeta(t *testing.T) {
@@ -340,19 +347,11 @@ func TestGetMeta(t *testing.T) {
 		t.Errorf("Metas are not equal")
 	}
 
-	// Check error in request
-
-	//Prepare the neccesary data
-	/*appToken := os.Getenv("APP_TOKEN")
-	appSecret := os.Getenv("APP_SECRET")
-	accessToken := os.Getenv("ACCESS_TOKEN")
-	accessSecret := os.Getenv("ACCESS_SECRET")
-
-	// Create the client
-	client, _ := NewDefaultClient(appToken, appSecret, accessToken, accessSecret)
-	fs := NewFileService(client)
-
-	fs.GetMeta("testing/")*/
+	// Test bad request
+	server.Close()
+	if _, err := fileService.GetTopLevelMeta(); err == nil {
+		t.Errorf("No server up, should be an error")
+	}
 
 }
 
@@ -387,6 +386,12 @@ func TestGetFile(t *testing.T) {
 
 	if !bytes.Equal(file, file2) {
 		t.Errorf("contents are not equal")
+	}
+
+	// Test bad request
+	server.Close()
+	if _, err := fileService.GetFile(filename); err == nil {
+		t.Errorf("No server up, should be an error")
 	}
 }
 
@@ -432,4 +437,9 @@ func TestFileUpload(t *testing.T) {
 		t.Error(err.Error())
 	}
 
+	// Test bad request
+	server.Close()
+	if err := fileService.UploadFile(filePath, strings.Join([]string{upPath, filePath}, "/"), true); err == nil {
+		t.Errorf("No server up, should be an error")
+	}
 }
