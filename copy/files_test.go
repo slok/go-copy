@@ -222,6 +222,140 @@ func TestJsonMetaDecoding(t *testing.T) {
 	}
 }
 
+func TestGetMeta(t *testing.T) {
+	setupFileService(t)
+	defer tearDownFileService()
+
+	mux.HandleFunc("/"+fmt.Sprintf(getMetaSuffix, "testing"),
+		func(w http.ResponseWriter, r *http.Request) {
+			testMethod(t, r, "GET")
+			fmt.Fprint(w,
+				`{
+               "id":"\/copy\/testing",
+               "path":"\/testing",
+               "name":"testing",
+               "type":"dir",
+               "size":null,
+               "date_last_synced":1386150047,
+               "modified_time":1386150047,
+               "stub":false,
+               "recipient_confirmed":false,
+               "counts":[
+
+               ],
+               "mime_type":"",
+               "link_name":null,
+               "token":null,
+               "creator_id":null,
+               "permissions":null,
+               "syncing":false,
+               "public":false,
+               "object_available":true,
+               "links":[
+
+               ],
+               "url":"https:\/\/copy.com\/web\/users\/user-8129109\/copy\/testing",
+               "thumb":null,
+               "share":null,
+               "children":[
+                  {
+                     "id":"\/copy\/testing\/random.txt",
+                     "path":"\/testing\/random.txt",
+                     "name":"random.txt",
+                     "type":"file",
+                     "size":1258291200,
+                     "date_last_synced":1386151250,
+                     "modified_time":1385993169,
+                     "stub":true,
+                     "recipient_confirmed":false,
+                     "counts":[
+
+                     ],
+                     "mime_type":"text\/plain",
+                     "link_name":null,
+                     "token":null,
+                     "creator_id":null,
+                     "permissions":null,
+                     "syncing":false,
+                     "public":false,
+                     "object_available":true,
+                     "links":[
+
+                     ],
+                     "url":"https:\/\/copy.com\/web\/users\/user-8129109\/copy\/testing\/random.txt",
+                     "revision":32,
+                     "thumb":null,
+                     "share":null,
+                     "list_index":0
+                  }
+               ],
+               "children_count":1
+            }`)
+		},
+	)
+
+	fileMeta, _ := fileService.GetMeta("testing")
+
+	perfectFileMeta := Meta{
+		Id:                 "/copy/testing",
+		Path:               "/testing",
+		Name:               "testing",
+		Type:               "dir",
+		DateLastSynced:     1386150047,
+		ModifiedTime:       1386150047,
+		Stub:               false,
+		RecipientConfirmed: false,
+		Syncing:            false,
+		Public:             false,
+		ObjectAvailable:    true,
+		Url:                "https://copy.com/web/users/user-8129109/copy/testing",
+		Links:              []Link{}, // for Deep equal nil and empty slice aren't the same
+		Children: []Meta{
+			Meta{
+				Id:                 "/copy/testing/random.txt",
+				Path:               "/testing/random.txt",
+				Name:               "random.txt",
+				Type:               "file",
+				Size:               1258291200,
+				DateLastSynced:     1386151250,
+				ModifiedTime:       1385993169,
+				Stub:               true,
+				RecipientConfirmed: false,
+				MimeType:           "text/plain",
+				Syncing:            false,
+				Public:             false,
+				ObjectAvailable:    true,
+				Url:                "https://copy.com/web/users/user-8129109/copy/testing/random.txt",
+				Revision:           32,
+				ListIndex:          0,
+				Links:              []Link{}, // for Deep equal nil and empty slice aren't the same
+
+			},
+		},
+		ChildrenCount: 1,
+	}
+
+	// Are bouth content equal?
+	if !reflect.DeepEqual(*fileMeta, perfectFileMeta) {
+		t.Errorf("Metas are not equal")
+	}
+
+	// Check error in request
+
+	//Prepare the neccesary data
+	/*appToken := os.Getenv("APP_TOKEN")
+	appSecret := os.Getenv("APP_SECRET")
+	accessToken := os.Getenv("ACCESS_TOKEN")
+	accessSecret := os.Getenv("ACCESS_SECRET")
+
+	// Create the client
+	client, _ := NewDefaultClient(appToken, appSecret, accessToken, accessSecret)
+	fs := NewFileService(client)
+
+	fs.GetMeta("testing/")*/
+
+}
+
 // Checks json decoding for the meta object
 func TestGetFile(t *testing.T) {
 	setupFileService(t)

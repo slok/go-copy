@@ -168,7 +168,7 @@ func (fs *FileService) GetMeta(path string) (*Meta, error) {
 // Returns all the metadata revisions of a file
 //
 // https://www.copy.com/developer/documentation#api-calls/filesystem
-func (fs *FileService) ListRevisionsMeta(path string) (*Meta, error) {
+func (fs *FileService) ListRevisionsMeta(path string) ([]Revision, error) {
 	return nil, nil
 }
 
@@ -230,15 +230,11 @@ func (fs *FileService) UploadFile(filePath, uploadPath string, overwrite bool) e
 		uploadPath = ""
 	}
 
-	// Set overwrite option
-	options := fmt.Sprintf(overwriteOption, overwrite)
-
 	// Sanitize path again
 	uploadPath = strings.Trim(uploadPath, "/")
 
-	// Create final paths
-	uploadPath = strings.Join([]string{filesTopLevelSuffix, uploadPath}, "/")
-	uploadPath = strings.Join([]string{uploadPath, options}, "")
+	// Create final path
+	uploadPath = fmt.Sprintf(filesCreateSuffix, uploadPath, overwrite)
 
 	res, err := fs.client.DoRequestMultipart(filePath, uploadPath, filename)
 
