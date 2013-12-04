@@ -99,12 +99,25 @@ type FileService struct {
 }
 
 var (
-	metaTopLevelSuffix  = "meta"
-	firstLevelSuffix    = strings.Join([]string{metaTopLevelSuffix, "copy"}, "/")
-	listRevisionsSuffix = strings.Join([]string{metaTopLevelSuffix, "%v@activity"}, "/")
-	revisionSuffix      = strings.Join([]string{metaTopLevelSuffix, "@time:%d"}, "/")
-	filesTopLevelSuffix = "files"
-	overwriteOption     = "?overwrite=%t"
+	//Options
+	overwriteOption = "overwrite=%t"
+	nameOption      = "name=%v"
+	pathOption      = "path=%v"
+	sizeOption      = "size=%d"
+
+	// Meta paths
+	metaTopLevelSuffix  = "meta"                                                        // http.../meta/PATH
+	firstLevelSuffix    = strings.Join([]string{metaTopLevelSuffix, "copy"}, "/")       // http.../meta/copy
+	getMetaSuffix       = strings.Join([]string{firstLevelSuffix, "%v"}, "/")           // http.../meta/copy/PATH
+	listRevisionsSuffix = strings.Join([]string{firstLevelSuffix, "%v/@activity"}, "/") // http.../meta/copy/PATH/@activity
+	revisionSuffix      = strings.Join([]string{listRevisionsSuffix, "@time:%d"}, "/")  // http.../meta/copy/PATH/@activity/@time:TIME
+
+	// File paths
+	filesTopLevelSuffix  = "files"
+	filesCreateSuffix    = strings.Join([]string{filesTopLevelSuffix, "/%v?", overwriteOption}, "")                  // http.../files/PATH?overwrite=FLAG
+	filesRenameSuffix    = strings.Join([]string{filesTopLevelSuffix, "/%v?", nameOption, "&", overwriteOption}, "") // http.../files/PATH?name=NEWFILENAME&overwrite=FLAG
+	filesMoveSuffix      = strings.Join([]string{filesTopLevelSuffix, "/%v?", pathOption, "&", overwriteOption}, "") // http.../files/PATH?overwrite=FLAG
+	filesThumbnailSuffix = strings.Join([]string{filesTopLevelSuffix, "/%v?", sizeOption}, "")                       // http.../files/PATH?size=SIZE
 )
 
 func NewFileService(client *Client) *FileService {
@@ -135,8 +148,11 @@ func (fs *FileService) GetTopLevelMeta() (*Meta, error) {
 //
 // https://www.copy.com/developer/documentation#api-calls/filesystem
 func (fs *FileService) GetMeta(path string) (*Meta, error) {
+
+	path = strings.Trim(path, "/")
+
 	meta := new(Meta)
-	resp, err := fs.client.DoRequestDecoding("GET", strings.Join([]string{firstLevelSuffix, path}, "/"), nil, meta)
+	resp, err := fs.client.DoRequestDecoding("GET", fmt.Sprintf(getMetaSuffix, path), nil, meta)
 
 	if err != nil {
 		return nil, err
