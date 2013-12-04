@@ -20,11 +20,14 @@ type Meta struct {
 	Type                    string                  `json:"type,omitempty"`
 	Size                    int                     `json:"size,omitempty"`
 	DateLastSynced          int                     `json:"date_last_synced,omitempty"`
+	ModifiedTime            int                     `json:"modified_time,omitempty"`
 	Stub                    bool                    `json:"stub,omitempty"`
 	Share                   bool                    `json:"share,omitempty"`
 	Children                []Meta                  `json:"children,omitempty"` // Inception :D
 	Counts                  Count                   `json:"counts,omitempty"`   // Array? (sometimes? ask copy.com)
 	RecipientConfirmed      bool                    `json:"recipient_confirmed",omitempty"`
+	MimeType                string                  `json:"mime_type",omitempty"`
+	Syncing                 bool                    `json:"syncing",omitempty"`
 	ObjectAvailable         bool                    `json:"object_available,omitempty"`
 	Links                   []Link                  `json:"links,omitempty"`
 	Revisions               []Revision              `json:"revisions,omitempty"`
@@ -33,6 +36,8 @@ type Meta struct {
 	Thumb                   string                  `json:"thumb,omitempty"`
 	ThumbOriginalDimensions ThumbOriginalDimensions `json:"thumb_original_dimensions,omitempty"`
 	ChildrenCount           int                     `json:"children_count",omitempty"`
+	Revision                int                     `json:"revision",omitempty"`
+	ListIndex               int                     `json:"list_index",omitempty"`
 }
 
 type Count struct {
