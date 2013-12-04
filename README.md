@@ -40,3 +40,7 @@ API implementation status:
     * Get meta of files attached to a link
 
 
+
+
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/slok/go-copy/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+
