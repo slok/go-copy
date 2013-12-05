@@ -169,7 +169,18 @@ func (fs *FileService) GetMeta(path string) (*Meta, error) {
 //
 // https://www.copy.com/developer/documentation#api-calls/filesystem
 func (fs *FileService) ListRevisionsMeta(path string) ([]Revision, error) {
-	return nil, nil
+	meta := new(Meta)
+	resp, err := fs.client.DoRequestDecoding("GET", fmt.Sprintf(listRevisionsSuffix, path), nil, meta)
+
+	if err != nil {
+		return nil, err
+	}
+
+	if resp.StatusCode >= 400 { // 400s and 500s
+		return nil, errors.New(fmt.Sprintf("Client response: %d", resp.StatusCode))
+	}
+
+	return meta.Revisions, nil
 }
 
 // Returns the metadata in an specified revision
@@ -179,7 +190,7 @@ func (fs *FileService) GetRevisionMeta(path string, time int) (*Meta, error) {
 	return nil, nil
 }
 
-// Returns the file content. the user NEEDS TO CLOSE the buffer after using in
+// Returns the file content. the user NEEDS TO CLOSE the buffer after using it
 //
 // https://www.copy.com/developer/documentation#api-calls/filesystem
 func (fs *FileService) GetFile(path string) (io.ReadCloser, error) {
