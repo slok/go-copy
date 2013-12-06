@@ -144,17 +144,20 @@ func (c *Client) DoRequestDecoding(method string, urlStr string, form url.Values
 
 	defer resp.Body.Close()
 
-	// response body to string
-	buf := new(bytes.Buffer)
-	_, err = buf.ReadFrom(resp.Body)
+	// If v is nil that means that the caller doesn't need the response
+	if v != nil {
+		// response body to string
+		buf := new(bytes.Buffer)
+		_, err = buf.ReadFrom(resp.Body)
 
-	if err != nil {
-		return nil, err
+		if err != nil {
+			return nil, err
+		}
+		respBody := buf.String()
+
+		// Decode to our structure
+		json.NewDecoder(strings.NewReader(respBody)).Decode(v)
 	}
-	respBody := buf.String()
-
-	// Decode to our structure
-	json.NewDecoder(strings.NewReader(respBody)).Decode(v)
 
 	return resp, nil
 }
