@@ -264,10 +264,21 @@ func (fs *FileService) UploadFile(filePath, uploadPath string, overwrite bool) e
 //
 // https://www.copy.com/developer/documentation#api-calls/filesystem
 func (fs *FileService) RenameFile(path string, newName string, overwrite bool) error {
-
 	path = strings.Trim(path, "/")
+	return fs.moveOrRenameFile(fmt.Sprintf(filesRenameSuffix, path, newName, overwrite))
+}
 
-	resp, err := fs.client.DoRequestDecoding("PUT", fmt.Sprintf(filesRenameSuffix, path, newName, overwrite), nil, nil)
+// Moves the file
+//
+// https://www.copy.com/developer/documentation#api-calls/filesystem
+func (fs *FileService) MoveFile(path string, newPath string, overwrite bool) error {
+	return nil
+}
+
+// Move and rename calls are similar, wrap in this function for convienence
+func (fs *FileService) moveOrRenameFile(finalUrl string) error {
+
+	resp, err := fs.client.DoRequestDecoding("PUT", finalUrl, nil, nil)
 
 	if err != nil {
 		return err
@@ -277,13 +288,6 @@ func (fs *FileService) RenameFile(path string, newName string, overwrite bool) e
 		return errors.New(fmt.Sprintf("Client response: %d", resp.StatusCode))
 	}
 
-	return nil
-}
-
-// Moves the file
-//
-// https://www.copy.com/developer/documentation#api-calls/filesystem
-func (fs *FileService) MoveFile(path string, newPath string) error {
 	return nil
 }
 
