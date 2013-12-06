@@ -355,6 +355,160 @@ func TestGetMeta(t *testing.T) {
 
 }
 
+func TestListRevisionsMeta(t *testing.T) {
+	setupFileService(t)
+	defer tearDownFileService()
+
+	mux.HandleFunc("/"+fmt.Sprintf(listRevisionsSuffix, "Big API hanges/API-Changes.md"),
+		func(w http.ResponseWriter, r *http.Request) {
+			testMethod(t, r, "GET")
+			fmt.Fprint(w,
+				`{
+                      "id": "/copy/Big%20API%20Changes/API-Changes.md/@activity",
+                      "path": "/Big API Changes/API-Changes.md",
+                      "name": "Activity",
+                      "token": null,
+                      "permissions": null,
+                      "syncing": false,
+                      "public": false,
+                      "type": "file",
+                      "size": 12670,
+                      "date_last_synced": 1365543105,
+                      "stub": false,
+                      "recipient_confirmed": false,
+                      "url": "https://copy.com/web/Big%20API%20Changes/API-Changes.md",
+                      "revision_id": "5000",
+                      "thumb": null,
+                      "share": null,
+                      "counts": [
+                      ],
+                      "links": [
+                      ],
+                      "revisions": [
+                        {
+                          "revision_id": "5000",
+                          "modified_time": "1365543105",
+                          "size": 12670,
+                          "latest": true,
+                          "conflict": 4324,
+                          "id": "/copy/Big%20API%20Changes/API-Changes.md/@activity/@time:1365543105",
+                          "type": "revision",
+                          "creator": {
+                            "user_id": "1381231",
+                            "created_time": 1358175510,
+                            "email": "thomashunter@example.com",
+                            "first_name": "Thomas",
+                            "last_name": "Hunter",
+                            "confirmed": true
+                          }
+                        },
+                        {
+                          "revision_id": "4900",
+                          "modified_time": "1365542000",
+                          "size": 12661,
+                          "latest": false,
+                          "conflict": 4324,
+                          "id": "/copy/Big%20API%20Changes/API-Changes.md/@activity/@time:1365542000",
+                          "type": "revision",
+                          "creator": {
+                            "user_id": "1381231",
+                            "created_time": 1358175510,
+                            "email": "thomashunter@example.com",
+                            "first_name": "Thomas",
+                            "last_name": "Hunter",
+                            "confirmed": true
+                          }
+                        },
+                        {
+                          "revision_id": "4800",
+                          "modified_time": "1365543073",
+                          "size": 12658,
+                          "latest": false,
+                          "conflict": 4324,
+                          "id": "/copy/Big%20API%20Changes/API-Changes.md/@activity/@time:1365543073",
+                          "type": "revision",
+                          "creator": {
+                            "user_id": "1381231",
+                            "created_time": 1358175510,
+                            "email": "thomashunter@example.com",
+                            "first_name": "Thomas",
+                            "last_name": "Hunter",
+                            "confirmed": true
+                          }
+                        }
+                      ]
+                    }
+                `)
+		},
+	)
+
+	revisions, _ := fileService.ListRevisionsMeta("Big API hanges/API-Changes.md")
+	perfectRevisions := []Revision{
+		Revision{
+			RevisionId:   "5000",
+			ModifiedTime: "1365543105",
+			Size:         12670,
+			Latest:       true,
+			Conflict:     4324,
+			Id:           "/copy/Big%20API%20Changes/API-Changes.md/@activity/@time:1365543105",
+			Type:         "revision",
+			Creator: Creator{
+				UserId:      "1381231",
+				CreatedTime: 1358175510,
+				Email:       "thomashunter@example.com",
+				FirstName:   "Thomas",
+				LastName:    "Hunter",
+				Confirmed:   true,
+			},
+		},
+		Revision{
+			RevisionId:   "4900",
+			ModifiedTime: "1365542000",
+			Size:         12661,
+			Latest:       false,
+			Conflict:     4324,
+			Id:           "/copy/Big%20API%20Changes/API-Changes.md/@activity/@time:1365542000",
+			Type:         "revision",
+			Creator: Creator{
+				UserId:      "1381231",
+				CreatedTime: 1358175510,
+				Email:       "thomashunter@example.com",
+				FirstName:   "Thomas",
+				LastName:    "Hunter",
+				Confirmed:   true,
+			},
+		},
+		Revision{
+			RevisionId:   "4800",
+			ModifiedTime: "1365543073",
+			Size:         12658,
+			Latest:       false,
+			Conflict:     4324,
+			Id:           "/copy/Big%20API%20Changes/API-Changes.md/@activity/@time:1365543073",
+			Type:         "revision",
+			Creator: Creator{
+				UserId:      "1381231",
+				CreatedTime: 1358175510,
+				Email:       "thomashunter@example.com",
+				FirstName:   "Thomas",
+				LastName:    "Hunter",
+				Confirmed:   true,
+			},
+		},
+	}
+
+	// Are bouth content equal?
+	if !reflect.DeepEqual(revisions, perfectRevisions) {
+		t.Errorf("Metas are not equal")
+	}
+
+	// Test bad request
+	server.Close()
+	if _, err := fileService.ListRevisionsMeta("Big API hanges/API-Changes.md"); err == nil {
+		t.Errorf("No server up, should be an error")
+	}
+}
+
 // Checks json decoding for the meta object
 func TestGetFile(t *testing.T) {
 	setupFileService(t)

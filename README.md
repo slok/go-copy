@@ -18,7 +18,8 @@ API implementation status:
 * Files
     * ~~Get root path meta~~
     * ~~Get path meta~~
-    * Get File revisions meta
+    * ~~Get File revisions meta~~
+        * Tested in sandbox (Copy API fails for now, can't test it in prod)
     * Get concrete file revision meta
     * ~~Get file data~~
     * Delete file
