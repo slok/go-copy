@@ -24,7 +24,7 @@ API implementation status:
     * ~~Get file data~~
     * Delete file
     * Update file
-    * Rename file
+    * ~~Rename file~~
     * Move file
     * Create dir
     * Upload file data
