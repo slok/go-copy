@@ -642,3 +642,45 @@ func TestRenameFile(t *testing.T) {
 		t.Errorf("No server up, should be an error")
 	}
 }
+
+func TestMoveFile(t *testing.T) {
+
+	setupFileService(t)
+	defer tearDownFileService()
+
+	filePath := "test/test2.txt"
+	newPath := "test3/test2.txt"
+	overwrite := true
+
+	regex := "/" + filesTopLevelSuffix + `/(.+)\?path=(.+)&overwrite=(.*)`
+	re, _ := regexp.Compile(regex)
+	mux.HandleFunc(strings.Join([]string{"", filesTopLevelSuffix, filePath}, "/"),
+		func(w http.ResponseWriter, r *http.Request) {
+			testMethod(t, r, "PUT")
+			matches := re.FindAllStringSubmatch(r.URL.String(), -1)
+			path := matches[0][1]
+			movePath := matches[0][2]
+
+			ow := false
+
+			if matches[0][3] == "true" {
+				ow = true
+			}
+
+			if filePath != path || newPath != movePath || overwrite != ow {
+				t.Errorf("Wrong params in URL")
+			}
+
+		},
+	)
+
+	if err := fileService.MoveFile(filePath, newPath, overwrite); err != nil {
+		t.Errorf("Shouldn't be an error")
+	}
+
+	// Test bad request
+	server.Close()
+	if err := fileService.MoveFile(filePath, newPath, overwrite); err == nil {
+		t.Errorf("No server up, should be an error")
+	}
+}
