@@ -263,7 +263,20 @@ func (fs *FileService) UploadFile(filePath, uploadPath string, overwrite bool) e
 // Renames the file
 //
 // https://www.copy.com/developer/documentation#api-calls/filesystem
-func (fs *FileService) RenameFile(path string, newName string) error {
+func (fs *FileService) RenameFile(path string, newName string, overwrite bool) error {
+
+	path = strings.Trim(path, "/")
+
+	resp, err := fs.client.DoRequestDecoding("PUT", fmt.Sprintf(filesRenameSuffix, path, newName, overwrite), nil, nil)
+
+	if err != nil {
+		return err
+	}
+
+	if resp.StatusCode >= 400 { // 400s and 500s
+		return errors.New(fmt.Sprintf("Client response: %d", resp.StatusCode))
+	}
+
 	return nil
 }
 

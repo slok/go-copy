@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"reflect"
+	"regexp"
 	"strings"
 	"testing"
 )
@@ -594,6 +595,50 @@ func TestFileUpload(t *testing.T) {
 	// Test bad request
 	server.Close()
 	if err := fileService.UploadFile(filePath, strings.Join([]string{upPath, filePath}, "/"), true); err == nil {
+		t.Errorf("No server up, should be an error")
+	}
+}
+
+func TestRenameFile(t *testing.T) {
+
+	setupFileService(t)
+	defer tearDownFileService()
+
+	filePath := "test/test2"
+	newName := "test2.2"
+	overwrite := true
+
+	regex := "/" + filesTopLevelSuffix + `/(.+)\?name=(.+)&overwrite=(.*)`
+	re, _ := regexp.Compile(regex)
+
+	mux.HandleFunc(strings.Join([]string{"", filesTopLevelSuffix, filePath}, "/"),
+		func(w http.ResponseWriter, r *http.Request) {
+			testMethod(t, r, "PUT")
+
+			matches := re.FindAllStringSubmatch(r.URL.String(), -1)
+			path := matches[0][1]
+			name := matches[0][2]
+
+			ow := false
+
+			if matches[0][3] == "true" {
+				ow = true
+			}
+
+			if filePath != path || newName != name || overwrite != ow {
+				t.Errorf("Wrong params in URL")
+			}
+
+		},
+	)
+
+	if err := fileService.RenameFile(filePath, newName, overwrite); err != nil {
+		t.Errorf("Shouldn't be an error")
+	}
+
+	// Test bad request
+	server.Close()
+	if err := fileService.RenameFile(filePath, newName, overwrite); err == nil {
 		t.Errorf("No server up, should be an error")
 	}
 }
