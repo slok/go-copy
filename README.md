@@ -9,7 +9,8 @@ Copy (http://copy.com) service library for Go lang
 
 
 
-API implementation status:
+API implementation status
+-------------------------
 
 * User
     * ~~Get User data~~
@@ -40,6 +41,24 @@ API implementation status:
     * Delete a link
     * Get meta of files attached to a link
 
+How to use it
+-------------
+
+import (
+    "github.com/slok/go-copy/copy"
+    "io/ioutil"
+)
+
+client, _ := copy.NewDefaultClient(appToken, appSecret, accessToken, accessSecret)
+fs := copy.NewFileService(client)
+filePath := "photos/awesome.png"
+r, _ := fs.GetFile(filePath)
+fileBytes, err := ioutil.ReadAll(r)
+
+err = ioutil.WriteFile("awesome.png", fileBytes, 0644)
+if err != nil {
+    panic(err)
+}
 
 
 
