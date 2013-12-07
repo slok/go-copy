@@ -44,6 +44,7 @@ API implementation status
 How to use it
 -------------
 
+```go
 import (
     "github.com/slok/go-copy/copy"
     "io/ioutil"
@@ -51,15 +52,16 @@ import (
 
 client, _ := copy.NewDefaultClient(appToken, appSecret, accessToken, accessSecret)
 fs := copy.NewFileService(client)
+
 filePath := "photos/awesome.png"
 r, _ := fs.GetFile(filePath)
-fileBytes, err := ioutil.ReadAll(r)
+fileBytes, _ := ioutil.ReadAll(r)
 
 err = ioutil.WriteFile("awesome.png", fileBytes, 0644)
 if err != nil {
     panic(err)
 }
-
+```
 
 
 [![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/slok/go-copy/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
