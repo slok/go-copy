@@ -145,3 +145,35 @@ func TestPutRequest(t *testing.T) {
 		t.Errorf("Not updated content with the REST API")
 	}
 }
+
+// Check the PUT request in a valid copy resource
+func TestDeleteRequest(t *testing.T) {
+	setupIntegration()
+	defer tearDownIntegration()
+
+	// Put file with file service (we use client wrapper for convenience)
+	client, err := NewDefaultClient(appToken, appSecret, accessToken, accessSecret)
+	fs := NewFileService(client)
+	err = fs.UploadFile("session_test.go", "session_test.go", true)
+	if err != nil {
+		t.Error("Could not prepare the DELETE integration test")
+	}
+
+	// Now test delete
+	resp, err := session.Delete(strings.Join([]string{defaultResourcesUrl, "files", "session_test.go"}, "/"), nil, defaultHttpClient)
+	resp.Body.Close()
+
+	if err != nil {
+		t.Error("Expected no error in Delete request")
+	}
+
+	if resp.StatusCode != 204 {
+		t.Errorf("Response status error shouldn't be: %v", resp.StatusCode)
+	}
+
+	resp, err = session.Delete(strings.Join([]string{defaultResourcesUrl, "files", "doesntexists.go"}, "/"), nil, defaultHttpClient)
+
+	if err == nil {
+		t.Error("Expected error in Delete request")
+	}
+}

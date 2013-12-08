@@ -88,7 +88,20 @@ func (s *Session) Post(urlStr string, form url.Values, httpClient *http.Client) 
 }
 
 func (s *Session) Delete(urlStr string, form url.Values, httpClient *http.Client) (*http.Response, error) {
-	return nil, nil
+	req, err := http.NewRequest("DELETE", urlStr, nil)
+
+	if err != nil {
+		return nil, err
+	}
+
+	if req.URL.RawQuery != "" {
+		return nil, errors.New("oauth: url must not contain a query string")
+	}
+
+	req.Header.Set("Authorization", s.OauthClient.AuthorizationHeader(&s.TokenCreds, "DELETE", req.URL, form))
+	req.URL.RawQuery = form.Encode()
+
+	return s.Do(req, httpClient)
 }
 
 func (s *Session) Put(urlStr string, form url.Values, httpClient *http.Client) (*http.Response, error) {
