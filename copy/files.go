@@ -212,6 +212,18 @@ func (fs *FileService) GetFile(path string) (io.ReadCloser, error) {
 //
 // https://www.copy.com/developer/documentation#api-calls/filesystem
 func (fs *FileService) DeleteFile(path string) error {
+	path = strings.Trim(path, "/")
+
+	resp, err := fs.client.DoRequestDecoding("DELETE", strings.Join([]string{filesTopLevelSuffix, path}, "/"), nil, nil)
+
+	if err != nil {
+		return err
+	}
+
+	if resp.StatusCode >= 400 { // 400s and 500s
+		return errors.New(fmt.Sprintf("Client response: %d", resp.StatusCode))
+	}
+
 	return nil
 }
 

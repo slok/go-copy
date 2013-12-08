@@ -684,3 +684,39 @@ func TestMoveFile(t *testing.T) {
 		t.Errorf("No server up, should be an error")
 	}
 }
+
+func TestDeleteFile(t *testing.T) {
+
+	setupFileService(t)
+	defer tearDownFileService()
+
+	filePath := "test/test2.txt"
+
+	resPath := strings.Join([]string{"", filesTopLevelSuffix, filePath}, "/")
+	regex := "/" + filesTopLevelSuffix + `/(.+)`
+	re, _ := regexp.Compile(regex)
+
+	mux.HandleFunc(resPath,
+		func(w http.ResponseWriter, r *http.Request) {
+			testMethod(t, r, "DELETE")
+
+			matches := re.FindAllStringSubmatch(r.URL.String(), -1)
+			path := matches[0][1]
+
+			if path != filePath {
+				t.Errorf("Wrong params in URL")
+			}
+
+		},
+	)
+
+	if err := fileService.DeleteFile(filePath); err != nil {
+		t.Errorf("Shouldn't be an error")
+	}
+
+	// Test bad request
+	server.Close()
+	if err := fileService.DeleteFile(filePath); err == nil {
+		t.Errorf("No server up, should be an error")
+	}
+}

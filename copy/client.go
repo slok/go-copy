@@ -134,7 +134,7 @@ func (c *Client) DoRequestDecoding(method string, urlStr string, form url.Values
 		resp, err = c.session.Put(endpoint, form, c.httpClient)
 
 	case "DELETE":
-		//resp, err = c.session.Delete(endpoint, form, c.httpClient)
+		resp, err = c.session.Delete(endpoint, form, c.httpClient)
 
 	}
 
