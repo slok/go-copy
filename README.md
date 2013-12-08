@@ -23,7 +23,7 @@ API implementation status
         * Tested in sandbox (Copy API fails for now, can't test it in prod)
     * Get concrete file revision meta
     * ~~Get file data~~
-    * Delete file
+    * ~~Delete file~~
     * Update file
     * ~~Rename file~~
     * ~~Move file~~
