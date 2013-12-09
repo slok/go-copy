@@ -177,3 +177,20 @@ func TestDeleteRequest(t *testing.T) {
 		t.Error("Expected error in Delete request")
 	}
 }
+
+// Check the PUT request in a valid copy resource
+func TestPostRequest(t *testing.T) {
+	setupIntegration()
+	defer tearDownIntegration()
+	path := strings.Join([]string{defaultResourcesUrl, "/files", "/new_directory/test", "?overwrite=true"}, "")
+	resp, err := session.Post(path, nil, defaultHttpClient)
+	resp.Body.Close()
+
+	if err != nil {
+		t.Error("Expected no error in Post request")
+	}
+	fmt.Println(resp.StatusCode)
+	if resp.StatusCode != 201 {
+		t.Errorf("Response status error shouldn't be: %v", resp.StatusCode)
+	}
+}

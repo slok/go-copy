@@ -84,7 +84,15 @@ func (s *Session) Get(urlStr string, form url.Values, httpClient *http.Client) (
 }
 
 func (s *Session) Post(urlStr string, form url.Values, httpClient *http.Client) (*http.Response, error) {
-	return nil, nil
+	req, err := http.NewRequest("POST", urlStr, strings.NewReader(form.Encode()))
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+
+	// Do not send the body so, last param is nil
+	req.Header.Set("Authorization", s.OauthClient.AuthorizationHeader(&s.TokenCreds, "POST", req.URL, nil))
+	return s.Do(req, httpClient)
 }
 
 func (s *Session) Delete(urlStr string, form url.Values, httpClient *http.Client) (*http.Response, error) {
