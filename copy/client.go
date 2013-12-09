@@ -128,7 +128,7 @@ func (c *Client) DoRequestDecoding(method string, urlStr string, form url.Values
 		resp, err = c.session.Get(endpoint, form, c.httpClient)
 
 	case "POST":
-		//resp, err = c.session.Post(endpoint, form, c.httpClient)
+		resp, err = c.session.Post(endpoint, form, c.httpClient)
 
 	case "PUT":
 		resp, err = c.session.Put(endpoint, form, c.httpClient)
