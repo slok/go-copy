@@ -27,7 +27,7 @@ API implementation status
     * Update file
     * ~~Rename file~~
     * ~~Move file~~
-    * Create dir
+    * ~~Create dir~~
     * Upload file data
         * ~~At once (Warning, in memory)~~
         * Chunked (Not possible for now, see API docs)
