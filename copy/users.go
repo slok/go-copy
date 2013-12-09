@@ -1,8 +1,6 @@
 package copy
 
 import (
-	"errors"
-	"fmt"
 	"net/url"
 )
 
@@ -50,14 +48,10 @@ func NewUserService(client *Client) *UserService {
 //https://www.copy.com/developer/documentation#api-calls/profile
 func (us *UserService) Get() (*User, error) {
 	user := new(User)
-	resp, err := us.client.DoRequestDecoding("GET", endpointSuffix, nil, user)
+	_, err := us.client.DoRequestDecoding("GET", endpointSuffix, nil, user)
 
 	if err != nil {
 		return nil, err
-	}
-
-	if resp.StatusCode >= 400 { // 400s and 500s
-		return nil, errors.New(fmt.Sprintf("Client response: %d", resp.StatusCode))
 	}
 
 	return user, nil
@@ -77,14 +71,10 @@ func (us *UserService) Update(user *User) error {
 		"last_name":  {user.LastName},
 	}
 
-	resp, err := us.client.DoRequestDecoding("PUT", endpointSuffix, values, user)
+	_, err := us.client.DoRequestDecoding("PUT", endpointSuffix, values, user)
 
 	if err != nil {
 		return err
-	}
-
-	if resp.StatusCode >= 400 { // 400s and 500s
-		return errors.New(fmt.Sprintf("Client response: %d", resp.StatusCode))
 	}
 
 	return nil

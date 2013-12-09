@@ -159,6 +159,10 @@ func (c *Client) DoRequestDecoding(method string, urlStr string, form url.Values
 		json.NewDecoder(strings.NewReader(respBody)).Decode(v)
 	}
 
+	if resp.StatusCode >= 400 { // 400s and 500s
+		return resp, errors.New(fmt.Sprintf("Client response: %d", resp.StatusCode))
+	}
+
 	return resp, nil
 }
 
@@ -179,6 +183,10 @@ func (c *Client) DoRequestContent(urlStr string) (*http.Response, error) {
 
 	// Don't close the body is a chunked HTTP response
 	//defer resp.Body.Close()
+
+	if resp.StatusCode >= 400 { // 400s and 500s
+		return resp, errors.New(fmt.Sprintf("Client response: %d", resp.StatusCode))
+	}
 
 	return resp, nil
 }
@@ -249,5 +257,15 @@ func (c *Client) DoRequestMultipart(filePath, uploadPath, filename string) (*htt
 	req.Header.Set("Content-Type", multiWriter.FormDataContentType())
 	req.Header.Set("Content-Length", fmt.Sprintf("%d", fileInfo.Size()))
 
-	return c.session.Do(req, c.httpClient)
+	resp, err := c.session.Do(req, c.httpClient)
+
+	if err != nil || resp == nil {
+		return nil, errors.New("Error making the request")
+	}
+
+	if resp.StatusCode >= 400 { // 400s and 500s
+		return resp, errors.New(fmt.Sprintf("Client response: %d", resp.StatusCode))
+	}
+
+	return resp, nil
 }

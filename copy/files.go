@@ -131,14 +131,10 @@ func NewFileService(client *Client) *FileService {
 // https://www.copy.com/developer/documentation#api-calls/filesystem
 func (fs *FileService) GetTopLevelMeta() (*Meta, error) {
 	meta := new(Meta)
-	resp, err := fs.client.DoRequestDecoding("GET", metaTopLevelSuffix, nil, meta)
+	_, err := fs.client.DoRequestDecoding("GET", metaTopLevelSuffix, nil, meta)
 
 	if err != nil {
 		return nil, err
-	}
-
-	if resp.StatusCode >= 400 { // 400s and 500s
-		return nil, errors.New(fmt.Sprintf("Client response: %d", resp.StatusCode))
 	}
 
 	return meta, nil
@@ -152,14 +148,10 @@ func (fs *FileService) GetMeta(path string) (*Meta, error) {
 	path = strings.Trim(path, "/")
 
 	meta := new(Meta)
-	resp, err := fs.client.DoRequestDecoding("GET", fmt.Sprintf(getMetaSuffix, path), nil, meta)
+	_, err := fs.client.DoRequestDecoding("GET", fmt.Sprintf(getMetaSuffix, path), nil, meta)
 
 	if err != nil {
 		return nil, err
-	}
-
-	if resp.StatusCode >= 400 { // 400s and 500s
-		return nil, errors.New(fmt.Sprintf("Client response: %d", resp.StatusCode))
 	}
 
 	return meta, nil
@@ -170,14 +162,10 @@ func (fs *FileService) GetMeta(path string) (*Meta, error) {
 // https://www.copy.com/developer/documentation#api-calls/filesystem
 func (fs *FileService) ListRevisionsMeta(path string) ([]Revision, error) {
 	meta := new(Meta)
-	resp, err := fs.client.DoRequestDecoding("GET", fmt.Sprintf(listRevisionsSuffix, path), nil, meta)
+	_, err := fs.client.DoRequestDecoding("GET", fmt.Sprintf(listRevisionsSuffix, path), nil, meta)
 
 	if err != nil {
 		return nil, err
-	}
-
-	if resp.StatusCode >= 400 { // 400s and 500s
-		return nil, errors.New(fmt.Sprintf("Client response: %d", resp.StatusCode))
 	}
 
 	return meta.Revisions, nil
@@ -201,10 +189,6 @@ func (fs *FileService) GetFile(path string) (io.ReadCloser, error) {
 		return nil, err
 	}
 
-	if resp.StatusCode >= 400 { // 400s and 500s
-		return nil, errors.New(fmt.Sprintf("Client response: %d", resp.StatusCode))
-	}
-
 	return resp.Body, nil
 }
 
@@ -214,14 +198,10 @@ func (fs *FileService) GetFile(path string) (io.ReadCloser, error) {
 func (fs *FileService) DeleteFile(path string) error {
 	path = strings.Trim(path, "/")
 
-	resp, err := fs.client.DoRequestDecoding("DELETE", strings.Join([]string{filesTopLevelSuffix, path}, "/"), nil, nil)
+	_, err := fs.client.DoRequestDecoding("DELETE", strings.Join([]string{filesTopLevelSuffix, path}, "/"), nil, nil)
 
 	if err != nil {
 		return err
-	}
-
-	if resp.StatusCode >= 400 { // 400s and 500s
-		return errors.New(fmt.Sprintf("Client response: %d", resp.StatusCode))
 	}
 
 	return nil
@@ -259,14 +239,10 @@ func (fs *FileService) UploadFile(filePath, uploadPath string, overwrite bool) e
 	// Create final path
 	uploadPath = fmt.Sprintf(filesCreateSuffix, uploadPath, overwrite)
 
-	res, err := fs.client.DoRequestMultipart(filePath, uploadPath, filename)
+	_, err := fs.client.DoRequestMultipart(filePath, uploadPath, filename)
 
 	if err != nil {
 		return err
-	}
-
-	if res.StatusCode >= 400 { // 400s and 500s
-		return errors.New(fmt.Sprintf("Client response: %d", res.StatusCode))
 	}
 
 	return nil
@@ -291,14 +267,10 @@ func (fs *FileService) MoveFile(path string, newPath string, overwrite bool) err
 
 // Move and rename calls are similar, wrap in this function for convienence
 func (fs *FileService) moveOrRenameFile(finalUrl string) error {
-	resp, err := fs.client.DoRequestDecoding("PUT", finalUrl, nil, nil)
+	_, err := fs.client.DoRequestDecoding("PUT", finalUrl, nil, nil)
 
 	if err != nil {
 		return err
-	}
-
-	if resp.StatusCode >= 400 { // 400s and 500s
-		return errors.New(fmt.Sprintf("Client response: %d", resp.StatusCode))
 	}
 
 	return nil
