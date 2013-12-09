@@ -279,6 +279,13 @@ func (fs *FileService) moveOrRenameFile(finalUrl string) error {
 // Creates a directory
 //
 // https://www.copy.com/developer/documentation#api-calls/filesystem
-func (fs *FileService) CreateDirectory(path string) error {
+func (fs *FileService) CreateDirectory(path string, overwrite bool) error {
+	path = strings.Trim(path, "/")
+	_, err := fs.client.DoRequestDecoding("POST", fmt.Sprintf(filesCreateSuffix, path, overwrite), nil, nil)
+
+	if err != nil {
+		return err
+	}
+
 	return nil
 }

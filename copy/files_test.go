@@ -652,7 +652,7 @@ func TestMoveFile(t *testing.T) {
 	newPath := "test3/test2.txt"
 	overwrite := true
 
-	regex := "/" + filesTopLevelSuffix + `/(.+)\?path=(.+)&overwrite=(.*)`
+	regex := "/" + filesTopLevelSuffix + `/(.+)\?path=(.+)&overwrite=(.+)`
 	re, _ := regexp.Compile(regex)
 	mux.HandleFunc(strings.Join([]string{"", filesTopLevelSuffix, filePath}, "/"),
 		func(w http.ResponseWriter, r *http.Request) {
@@ -719,4 +719,47 @@ func TestDeleteFile(t *testing.T) {
 	if err := fileService.DeleteFile(filePath); err == nil {
 		t.Errorf("No server up, should be an error")
 	}
+}
+
+func TestCreateDirFile(t *testing.T) {
+
+	setupFileService(t)
+	defer tearDownFileService()
+
+	filePath := "dir1/dir2"
+	overwrite := true
+
+	resPath := strings.Join([]string{"", filesTopLevelSuffix, filePath}, "/")
+	regex := "/" + filesTopLevelSuffix + `/(.+)\?overwrite=(.+)`
+	re, _ := regexp.Compile(regex)
+
+	mux.HandleFunc(resPath,
+		func(w http.ResponseWriter, r *http.Request) {
+			testMethod(t, r, "POST")
+			matches := re.FindAllStringSubmatch(r.URL.String(), -1)
+			path := matches[0][1]
+
+			ow := false
+
+			if matches[0][2] == "true" {
+				ow = true
+			}
+
+			if filePath != path || overwrite != ow {
+				t.Errorf("Wrong params in URL")
+			}
+
+		},
+	)
+
+	if err := fileService.CreateDirectory(filePath, overwrite); err != nil {
+		t.Errorf("Shouldn't be an error")
+	}
+
+	// Test bad request
+	server.Close()
+	if err := fileService.CreateDirectory(filePath, overwrite); err == nil {
+		t.Errorf("No server up, should be an error")
+	}
+
 }
