@@ -175,7 +175,14 @@ func (fs *FileService) ListRevisionsMeta(path string) ([]Revision, error) {
 //
 // https://www.copy.com/developer/documentation#api-calls/filesystem
 func (fs *FileService) GetRevisionMeta(path string, time int) (*Meta, error) {
-	return nil, nil
+	meta := new(Meta)
+	_, err := fs.client.DoRequestDecoding("GET", fmt.Sprintf(revisionSuffix, path, time), nil, meta)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return meta, nil
 }
 
 // Returns the file content. the user NEEDS TO CLOSE the buffer after using it

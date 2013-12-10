@@ -763,3 +763,68 @@ func TestCreateDirFile(t *testing.T) {
 	}
 
 }
+
+func TestGetRevisionMeta(t *testing.T) {
+	setupFileService(t)
+	defer tearDownFileService()
+
+	mux.HandleFunc("/"+fmt.Sprintf(revisionSuffix, "Big API hanges/API-Changes.md", 1365532651),
+		func(w http.ResponseWriter, r *http.Request) {
+			testMethod(t, r, "GET")
+			fmt.Fprint(w,
+				`{
+                    "id": "/copy/Big%20API%20Changes/API-Changes.md/@activity/@time:1365532651",
+                    "path": "/Big API Changes/API-Changes.md",
+                    "name": "API-Changes.md",
+                    "token": null,
+                    "permissions": null,
+                    "syncing": false,
+                    "public": false,
+                    "type": "file",
+                    "size": 12666,
+                    "date_last_synced": 1365532651,
+                    "stub": false,
+                    "recipient_confirmed": false,
+                    "url": "https://copy.com/web/Big%20API%20Changes/API-Changes.md?revision=4898",
+                    "revision_id": 4898,
+                    "thumb": null,
+                    "share": null,
+                    "counts": [
+                    ],
+                    "links": [
+                      ]
+                }
+                `)
+		},
+	)
+
+	revision, _ := fileService.GetRevisionMeta("Big API hanges/API-Changes.md", 1365532651)
+	perfectRevision := Meta{
+
+		Id:                 "/copy/Big%20API%20Changes/API-Changes.md/@activity/@time:1365532651",
+		Path:               "/Big API Changes/API-Changes.md",
+		Name:               "API-Changes.md",
+		Syncing:            false,
+		Public:             false,
+		Type:               "file",
+		Size:               12666,
+		DateLastSynced:     1365532651,
+		Stub:               false,
+		RecipientConfirmed: false,
+		Url:                "https://copy.com/web/Big%20API%20Changes/API-Changes.md?revision=4898",
+		RevisionId:         4898,
+		Counts:             Count{},
+		Links:              []Link{},
+	}
+
+	// Are bouth content equal?
+	if !reflect.DeepEqual(*revision, perfectRevision) {
+		t.Errorf("Metas are not equal")
+	}
+
+	// Test bad request
+	server.Close()
+	if _, err := fileService.ListRevisionsMeta("Big API hanges/API-Changes.md"); err == nil {
+		t.Errorf("No server up, should be an error")
+	}
+}
