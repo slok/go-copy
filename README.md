@@ -3,9 +3,9 @@ go-copy
 
 Copy (http://copy.com) service library for Go lang
 
-| Status        | Tests                                                                                                                   | Coverage                                                                                                                                 |
-| ------------- |:-----------------------------------------------------------------------------------------------------------------------:| ----------------------------------------------------------------------------------------------------------------------------------------:|
-| Development   | [![Build Status](https://drone.io/github.com/slok/go-copy/status.png)](https://drone.io/github.com/slok/go-copy/latest) | [![Coverage Status](https://coveralls.io/repos/slok/go-copy/badge.png?branch=master)](https://coveralls.io/r/slok/go-copy?branch=master) |
+| Status        | Tests                                                                                                                   | Coverage                                                                                                                                 | Docs
+| :-------------: |:-----------------------------------------------------------------------------------------------------------------------:| ----------------------------------------------------------------------------------------------------------------------------------------:|:----------------------------------------------------------------------------------------------------------------------------------------:|
+| Development   | [![Build Status](https://drone.io/github.com/slok/go-copy/status.png)](https://drone.io/github.com/slok/go-copy/latest) | [![Coverage Status](https://coveralls.io/repos/slok/go-copy/badge.png?branch=master)](https://coveralls.io/r/slok/go-copy?branch=master) | [![GoDoc](http://godoc.org/github.com/slok/go-copy/copy?status.png)](http://godoc.org/github.com/slok/go-copy/copy)
 
 
 
