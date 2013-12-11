@@ -2,12 +2,10 @@ package copy
 
 import (
 	"errors"
-	//"io"
-	//"log"
 	"net/http"
 	"net/url"
+	"regexp"
 	"strings"
-	//"os"
 
 	"github.com/garyburd/go-oauth/oauth"
 )
@@ -67,16 +65,25 @@ func NewSession(appToken AppToken, accessToken AccessToken) (*Session, error) {
 
 func (s *Session) Get(urlStr string, form url.Values, httpClient *http.Client) (*http.Response, error) {
 	req, err := http.NewRequest("GET", urlStr, nil)
-
 	if err != nil {
 		return nil, err
 	}
 
-	if req.URL.RawQuery != "" {
-		return nil, errors.New("oauth: url must not contain a query string")
+	var u *url.URL
+
+	if req.URL.RawQuery != "" { // This is needed for the oauth  auth
+
+		//return nil, errors.New("oauth: url must not contain a query string")
+
+		// Get the uri without the querystring
+		re, _ := regexp.Compile(`(https?://.+)\?.+`)
+		matches := re.FindAllStringSubmatch(req.URL.String(), -1)
+		u, _ = url.Parse(matches[0][1])
+	} else {
+		u = req.URL
 	}
 
-	req.Header.Set("Authorization", s.OauthClient.AuthorizationHeader(&s.TokenCreds, "GET", req.URL, form))
+	req.Header.Set("Authorization", s.OauthClient.AuthorizationHeader(&s.TokenCreds, "GET", u, form))
 	req.URL.RawQuery = form.Encode()
 
 	return s.Do(req, httpClient)
