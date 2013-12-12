@@ -285,7 +285,7 @@ func TestDoRequestContent(t *testing.T) {
 		},
 	)
 
-	resp, err := client.DoRequestContent("do-request-decoding")
+	resp, err := client.DoRequestContent("do-request-decoding", nil)
 	defer resp.Body.Close()
 
 	file2, err := ioutil.ReadAll(resp.Body)

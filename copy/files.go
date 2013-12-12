@@ -190,7 +190,7 @@ func (fs *FileService) GetRevisionMeta(path string, time int) (*Meta, error) {
 // https://www.copy.com/developer/documentation#api-calls/filesystem
 func (fs *FileService) GetFile(path string) (io.ReadCloser, error) {
 
-	resp, err := fs.client.DoRequestContent(strings.Join([]string{filesTopLevelSuffix, path}, "/"))
+	resp, err := fs.client.DoRequestContent(strings.Join([]string{filesTopLevelSuffix, path}, "/"), nil)
 
 	if err != nil {
 		return nil, err
