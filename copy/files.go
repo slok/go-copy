@@ -113,11 +113,13 @@ var (
 	revisionSuffix      = strings.Join([]string{listRevisionsSuffix, "@time:%d"}, "/")  // http.../meta/copy/PATH/@activity/@time:TIME
 
 	// File paths
-	filesTopLevelSuffix  = "files"
-	filesCreateSuffix    = strings.Join([]string{filesTopLevelSuffix, "/%v?", overwriteOption}, "")                  // http.../files/PATH?overwrite=FLAG
-	filesRenameSuffix    = strings.Join([]string{filesTopLevelSuffix, "/%v?", nameOption, "&", overwriteOption}, "") // http.../files/PATH?name=NEWFILENAME&overwrite=FLAG
-	filesMoveSuffix      = strings.Join([]string{filesTopLevelSuffix, "/%v?", pathOption, "&", overwriteOption}, "") // http.../files/PATH?overwrite=FLAG
-	filesThumbnailSuffix = strings.Join([]string{filesTopLevelSuffix, "/%v?", sizeOption}, "")                       // http.../files/PATH?size=SIZE
+	filesTopLevelSuffix = "files"
+	filesCreateSuffix   = strings.Join([]string{filesTopLevelSuffix, "/%v?", overwriteOption}, "")                  // http.../files/PATH?overwrite=FLAG
+	filesRenameSuffix   = strings.Join([]string{filesTopLevelSuffix, "/%v?", nameOption, "&", overwriteOption}, "") // http.../files/PATH?name=NEWFILENAME&overwrite=FLAG
+	filesMoveSuffix     = strings.Join([]string{filesTopLevelSuffix, "/%v?", pathOption, "&", overwriteOption}, "") // http.../files/PATH?overwrite=FLAG
+
+	thumbsTopLevelSuffix = "thumbs"
+	//filesThumbnailSuffix = strings.Join([]string{thumbsTopLevelSuffix, "/%v?", sizeOption}, "") // http.../thumbs/PATH?size=SIZE
 )
 
 func NewFileService(client *Client) *FileService {
@@ -295,4 +297,26 @@ func (fs *FileService) CreateDirectory(path string, overwrite bool) error {
 	}
 
 	return nil
+}
+
+// Gets the thumbnail asociated to the file. Size can be: 32, 64, 128, 256, 512, 1024
+// User must close the returned readcloser
+//
+// https://www.copy.com/developer/documentation#api-calls/filesystem
+func (fs *FileService) GetThumbnail(path string, size int) (io.ReadCloser, error) {
+
+	if size != 32 && size != 64 && size != 128 && size != 256 && size != 512 && size != 1024 {
+		return nil, errors.New("Wrong thumbnail size")
+	}
+
+	path = strings.Trim(path, "/")
+
+	resp, err := fs.client.DoRequestContent(strings.Join([]string{thumbsTopLevelSuffix, path}, "/"),
+		map[string][]string{"size": []string{fmt.Sprintf("%d", size)}})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return resp.Body, nil
 }

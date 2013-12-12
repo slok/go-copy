@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"reflect"
 	"regexp"
+	"strconv"
 	"strings"
 	"testing"
 )
@@ -825,6 +826,52 @@ func TestGetRevisionMeta(t *testing.T) {
 	// Test bad request
 	server.Close()
 	if _, err := fileService.ListRevisionsMeta("Big API hanges/API-Changes.md"); err == nil {
+		t.Errorf("No server up, should be an error")
+	}
+}
+
+func TestGetThumbnail(t *testing.T) {
+
+	setupFileService(t)
+	defer tearDownFileService()
+
+	// Use a simple file instead of a photo, doesn't matter ;)
+	filename := "client_test.go"
+	// Read the file to test
+	file, err := ioutil.ReadFile(filename)
+
+	if err != nil {
+		t.Error(err.Error())
+	}
+
+	mux.HandleFunc(strings.Join([]string{"", thumbsTopLevelSuffix, filename}, "/"),
+		func(w http.ResponseWriter, r *http.Request) {
+			testMethod(t, r, "GET")
+			size, _ := strconv.Atoi(r.URL.Query()["size"][0])
+			if size != 32 && size != 64 && size != 128 && size != 256 && size != 512 && size != 1024 {
+				t.Errorf("Wrong parameter")
+			}
+
+			w.Write(file)
+		},
+	)
+
+	fileReader, _ := fileService.GetThumbnail(filename, 32)
+	defer fileReader.Close()
+
+	file2, err := ioutil.ReadAll(fileReader)
+
+	if err != nil {
+		t.Error(err.Error())
+	}
+
+	if !bytes.Equal(file, file2) {
+		t.Errorf("contents are not equal")
+	}
+
+	// Test bad request
+	server.Close()
+	if _, err := fileService.GetFile(filename); err == nil {
 		t.Errorf("No server up, should be an error")
 	}
 }

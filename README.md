@@ -33,6 +33,7 @@ API implementation status
         * ~~At once (Warning, in memory)~~
         * Chunked (Not possible for now, see API docs)
     * Get thumbnail
+        * Tested in sandbox (Copy API fails for now, can't test it in prod)
 
 * Links
     * Get link information
