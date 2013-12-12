@@ -182,7 +182,11 @@ func TestDeleteRequest(t *testing.T) {
 func TestPostRequest(t *testing.T) {
 	setupIntegration()
 	defer tearDownIntegration()
-	path := strings.Join([]string{defaultResourcesUrl, "/files", "/new_directory/test", "?overwrite=true"}, "")
+
+	resp, _ := session.Delete(strings.Join([]string{defaultResourcesUrl, "files", "newdirectory/test"}, "/"), nil, defaultHttpClient)
+	resp.Body.Close()
+
+	path := strings.Join([]string{defaultResourcesUrl, "/files", "/newdirectory/test", "?overwrite=true"}, "")
 	resp, err := session.Post(path, nil, defaultHttpClient)
 	resp.Body.Close()
 
