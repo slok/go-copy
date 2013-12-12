@@ -32,7 +32,7 @@ API implementation status
     * Upload file data
         * ~~At once (Warning, in memory)~~
         * Chunked (Not possible for now, see API docs)
-    * Get thumbnail
+    * ~~Get thumbnail~~
         * Tested in sandbox (Copy API fails for now, can't test it in prod)
 
 * Links
