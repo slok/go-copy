@@ -875,3 +875,53 @@ func TestGetThumbnail(t *testing.T) {
 		t.Errorf("No server up, should be an error")
 	}
 }
+
+func TestFileUpdate(t *testing.T) {
+	setupFileService(t)
+	defer tearDownFileService()
+
+	filePath := "files_test.go"
+	upPath := "tests/uploads/" + filePath
+
+	// Read the file to test
+	origFile, err := ioutil.ReadFile(filePath)
+
+	if err != nil {
+		t.Error(err.Error())
+	}
+
+	resPath := strings.Join([]string{"", filesTopLevelSuffix, upPath}, "/")
+
+	mux.HandleFunc(resPath,
+		func(w http.ResponseWriter, r *http.Request) {
+			testMethod(t, r, "PUT")
+
+			// Check that upload is ok
+			r.ParseMultipartForm(100000)
+			form := r.MultipartForm
+
+			files, _ := form.File["file"]
+			file, _ := files[0].Open()
+			defer file.Close()
+
+			buf := new(bytes.Buffer)
+			io.Copy(buf, file)
+
+			if !bytes.Equal(origFile, buf.Bytes()) {
+				t.Errorf("contents are not equal")
+			}
+		},
+	)
+
+	err = fileService.UpdateFile(filePath, upPath)
+
+	if err != nil {
+		t.Error(err.Error())
+	}
+
+	// Test bad request
+	server.Close()
+	if err := fileService.UpdateFile(filePath, upPath); err == nil {
+		t.Errorf("No server up, should be an error")
+	}
+}

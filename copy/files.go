@@ -248,7 +248,37 @@ func (fs *FileService) UploadFile(filePath, uploadPath string, overwrite bool) e
 	// Create final path
 	uploadPath = fmt.Sprintf(filesCreateSuffix, uploadPath, overwrite)
 
-	_, err := fs.client.DoRequestMultipart(filePath, uploadPath, filename)
+	_, err := fs.client.DoRequestMultipart(filePath, uploadPath, filename, "POST")
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// Uploads the file (updating it). Loads the file from the file path and uploads to the
+// uploadPath.
+// For example:
+//   filePath: /home/slok/myFile.txt
+//   UploadPath: test/uploads/something.txt
+//
+// https://www.copy.com/developer/documentation#api-calls/filesystem
+func (fs *FileService) UpdateFile(filePath, uploadPath string) error {
+
+	// Sanitize path
+	uploadPath = strings.Trim(uploadPath, "/")
+
+	// Get upload filename
+	filename := filepath.Base(uploadPath)
+
+	if filename == "" {
+		return errors.New("Wrong uploadPath")
+	}
+
+	uploadPath = strings.Join([]string{filesTopLevelSuffix, uploadPath}, "/")
+
+	_, err := fs.client.DoRequestMultipart(filePath, uploadPath, filename, "PUT")
 
 	if err != nil {
 		return err
