@@ -334,7 +334,7 @@ func TestDoRequestMultipart(t *testing.T) {
 		},
 	)
 
-	client.DoRequestMultipart(filePath, "do-request-multipart", filePath)
+	client.DoRequestMultipart(filePath, "do-request-multipart", filePath, "POST")
 	if err != nil {
 		t.Error(err.Error())
 	}

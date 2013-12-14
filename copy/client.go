@@ -193,7 +193,7 @@ func (c *Client) DoRequestContent(urlStr string, form url.Values) (*http.Respons
 
 // Makes the client request for uploading multipart request
 //
-func (c *Client) DoRequestMultipart(filePath, uploadPath, filename string) (*http.Response, error) {
+func (c *Client) DoRequestMultipart(filePath, uploadPath, filename, method string) (*http.Response, error) {
 
 	endpoint := strings.Join([]string{c.resourcesUrl, uploadPath}, "/")
 
@@ -246,14 +246,14 @@ func (c *Client) DoRequestMultipart(filePath, uploadPath, filename string) (*htt
 	}
 	_, err = io.Copy(part, file)
 	multiWriter.Close()
-	req, err := http.NewRequest("POST", endpoint, body)
+	req, err := http.NewRequest(method, endpoint, body)
 	if err != nil {
 		return nil, err
 	}
 	//-----------------------------------------------------------
 
 	fileInfo, _ := file.Stat()
-	req.Header.Set("Authorization", c.session.OauthClient.AuthorizationHeader(&c.session.TokenCreds, "POST", req.URL, nil))
+	req.Header.Set("Authorization", c.session.OauthClient.AuthorizationHeader(&c.session.TokenCreds, method, req.URL, nil))
 	req.Header.Set("Content-Type", multiWriter.FormDataContentType())
 	req.Header.Set("Content-Length", fmt.Sprintf("%d", fileInfo.Size()))
 
