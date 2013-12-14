@@ -25,7 +25,8 @@ API implementation status
         * Tested in sandbox (Copy API fails for now, can't test it in prod)
     * ~~Get file data~~
     * ~~Delete file~~
-    * Update file
+    * ~~Update file~~
+        * Tested in sandbox (Copy API fails for now, can't test it in prod)
     * ~~Rename file~~
     * ~~Move file~~
     * ~~Create dir~~
