@@ -3,6 +3,18 @@ go-copy
 
 Copy (http://copy.com) service library for Go lang
 
+
+Description
+===========
+
+Copy is a new service like dropbox, where you can sync your files in the cloud
+with his application, web interface or REST API. 
+
+The aim of this library is to support all or almost all the API calls that copy
+exposes to the public.
+
+This library is written in Go.
+
 | Status        | Tests                                                                                                                   | Coverage                                                                                                                                 | Docs
 | :-------------: |:-----------------------------------------------------------------------------------------------------------------------:| ----------------------------------------------------------------------------------------------------------------------------------------:|:----------------------------------------------------------------------------------------------------------------------------------------:|
 | Development   | [![Build Status](https://drone.io/github.com/slok/go-copy/status.png)](https://drone.io/github.com/slok/go-copy/latest) | [![Coverage Status](https://coveralls.io/repos/slok/go-copy/badge.png?branch=master)](https://coveralls.io/r/slok/go-copy?branch=master) | [![GoDoc](http://godoc.org/github.com/slok/go-copy/copy?status.png)](http://godoc.org/github.com/slok/go-copy/copy)
@@ -66,6 +78,10 @@ if err != nil {
 }
 ```
 
+License
+=======
+
+See LICENSE file
 
 [![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/slok/go-copy/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
 
