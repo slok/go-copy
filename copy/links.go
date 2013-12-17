@@ -22,30 +22,30 @@ func NewLinkService(client *Client) *LinkService {
 	return fs
 }
 
-func (linkService *LinkService) GetLink(token string) (*Meta, error) {
+func (ls *LinkService) GetLink(token string) (*Meta, error) {
 	return nil, nil
 }
 
-func (linkService *LinkService) GetLinks() ([]Meta, error) {
+func (ls *LinkService) GetLinks() ([]Meta, error) {
 	return nil, nil
 }
 
-func (linkService *LinkService) CreateLink(name string, paths []string, public bool) (*Meta, error) {
+func (ls *LinkService) CreateLink(name string, paths []string, public bool) error {
 	return nil, nil
 }
 
-func (linkService *LinkService) AddPaths(token string, paths []string) (*Meta, error) {
+func (ls *LinkService) AddPaths(token string, paths []string) error {
 	return nil, nil
 }
 
-func (linkService *LinkService) AddRecipients(token string, recipients []Recipient) (*Meta, error) {
+func (ls *LinkService) AddRecipients(token string, recipients []Recipient) error {
 	return nil, nil
 }
 
-func (linkService *LinkService) DeleteLink(token string) (*Meta, error) {
+func (ls *LinkService) DeleteLink(token string) error {
 	return nil, nil
 }
 
-func (linkService *LinkService) GetFilesMetaFromLink(token string) (*Meta, error) {
+func (ls *LinkService) GetFilesMetaFromLink(token string) (*Meta, error) {
 	return nil, nil
 }
