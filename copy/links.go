@@ -31,19 +31,19 @@ func (ls *LinkService) GetLinks() ([]Meta, error) {
 }
 
 func (ls *LinkService) CreateLink(name string, paths []string, public bool) error {
-	return nil, nil
+	return nil
 }
 
 func (ls *LinkService) AddPaths(token string, paths []string) error {
-	return nil, nil
+	return nil
 }
 
 func (ls *LinkService) AddRecipients(token string, recipients []Recipient) error {
-	return nil, nil
+	return nil
 }
 
 func (ls *LinkService) DeleteLink(token string) error {
-	return nil, nil
+	return nil
 }
 
 func (ls *LinkService) GetFilesMetaFromLink(token string) (*Meta, error) {
